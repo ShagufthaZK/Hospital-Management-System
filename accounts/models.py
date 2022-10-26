@@ -1,12 +1,15 @@
 import email
 from enum import unique
+from random import choices
 from tabnanny import verbose
 from unittest.util import _MAX_LENGTH
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
+USER_TYPE = [('patient','Patient'),('hospital','Hospital'),('pharmacy','Pharmacy'),('insurance','Insurance Company'),('professional','Healthcare Professional')]
+
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, email, official_name, address, password = None):
+    def create_user(self, username, email, official_name, address, user_type, mobile, password = None):
         if not username:
             raise ValueError('Users must have an username')
         if not email:
@@ -22,26 +25,30 @@ class CustomUserManager(BaseUserManager):
             email=self.normalize_email(email),
             official_name=official_name,
             address = address,
+            user_type = user_type,
+            mobile = mobile,
         )
-        #TODO: what about which type of user this is?
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
 
-    def create_superuser(self,username, email, official_name, address, password = None):
+    def create_superuser(self,username, email, official_name, address, user_type,mobile, password = None):
         user = self.create_user(
             username = username,
             email=self.normalize_email(email),
             official_name=official_name,
             address = address,
+            user_type = user_type,
+            mobile = mobile,
             password = password,
         )
 
         user.is_admin = True
         user.is_superuser = True
         user.is_staff = True
+        user.is_approved = True
         user.save(using=self._db)
         return user
 
@@ -62,17 +69,14 @@ class CustomUser(AbstractBaseUser):
     #additional fields
     official_name = models.CharField(max_length=50)
     address = models.CharField(max_length=50)
-    #last_name = models.CharField(max_length=30)
-    is_patient = models.BooleanField(default=False)
-    is_hospital = models.BooleanField(default=False)
-    is_healthcare_profesional = models.BooleanField(default=False)
-    is_pharmacy = models.BooleanField(default=False)
-    is_insurance = models.BooleanField(default=False)
+    mobile = models.IntegerField()
+    
     is_approved = models.BooleanField(default=False)
+    user_type = models.CharField(max_length=30,choices=USER_TYPE)
 
     #primary field which will be used for login
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email','official_name','address']
+    REQUIRED_FIELDS = ['email','official_name','address','user_type','mobile']
 
     objects = CustomUserManager()
 

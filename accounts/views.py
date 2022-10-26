@@ -13,9 +13,9 @@ def registration_view(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             #TODO: why are we authenticating during signup?
-            account = authenticate(username=username, password = raw_password)
-            login(request,account)
-            return redirect('home')
+            # account = authenticate(username=username, password = raw_password)
+            # login(request,account)
+            return redirect('login')
         else:
             context['registration_form'] = form
     else:
