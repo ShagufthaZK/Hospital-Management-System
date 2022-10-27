@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic.base import TemplateView
-from accounts.views import registration_view, logout_view, login_view
+from accounts.views import editprofile, registration_view, logout_view, login_view, patient_view, editprofile
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,5 +24,8 @@ urlpatterns = [
     path('signup/',registration_view, name="signup"),
     path('logout/',logout_view, name="logout"),
     path('login/',login_view, name="login"),
+    path('edit/', editprofile, name="edit"),
+    path('patient_index/', patient_view, name="patient_index"),
+    path('edit/',editprofile, name="edit")
 
 ]

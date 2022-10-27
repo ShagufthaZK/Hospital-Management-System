@@ -68,7 +68,7 @@
 
           <form class="card-body cardbody-color p-lg-5" method="post">
             {% csrf_token %}
-            {% for field in registration_form%} 
+            {% for field in edit_form%} 
             <p>
                 <div class="mb-3">
                 {{field.label_tag}}
@@ -85,7 +85,7 @@
                 </p>
             {%endfor%}
         {%endfor%}
-        <button type="submit" class="btn btn-color px-5 mb-5 w-100">Signup</button>
+        <button type="submit" class="btn btn-color px-5 mb-5 w-100">Update profile</button>
             {% comment %} <div class="text-center">
               <img src="https://cdn.pixabay.com/photo/2016/03/31/19/56/avatar-1295397__340.png" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
                 width="200px" alt="profile">

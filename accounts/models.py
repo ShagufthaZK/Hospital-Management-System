@@ -1,3 +1,4 @@
+
 import email
 from enum import unique
 from random import choices
@@ -69,7 +70,7 @@ class CustomUser(AbstractBaseUser):
     #additional fields
     official_name = models.CharField(max_length=50)
     address = models.CharField(max_length=50)
-    mobile = models.IntegerField()
+    mobile = models.IntegerField(default=0)
     
     is_approved = models.BooleanField(default=False)
     user_type = models.CharField(max_length=30,choices=USER_TYPE)
