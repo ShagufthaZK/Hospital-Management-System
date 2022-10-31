@@ -16,16 +16,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic.base import TemplateView
-from accounts.views import editprofile, registration_view, logout_view, login_view, patient_view, editprofile
+from accounts.views import editprofile, registration_view, logout_view, login_view, patient_view, editprofile, hospital_view, insurance_view, pharmacy_view, healthcare_prof_view, otp_email_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('signup/',registration_view, name="signup"),
+    path('otp_email/',otp_email_view, name="otp_email"),
     path('logout/',logout_view, name="logout"),
     path('login/',login_view, name="login"),
     path('edit/', editprofile, name="edit"),
     path('patient_index/', patient_view, name="patient_index"),
+    path('hospital_index/', hospital_view, name="hospital_index"),
+    path('insurance_index/', insurance_view, name="insurance_index"),
+    path('pharmacy_index/', pharmacy_view, name="pharmacy_index"),
+    path('health_prof_index/', healthcare_prof_view, name="health_prof_index"),
     path('edit/',editprofile, name="edit")
 
 ]

@@ -2,7 +2,7 @@ from dataclasses import field
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import authenticate
-from accounts.models import CustomUser
+from accounts.models import CustomUser, OTPMobileVerification
 
 
 class RegistrationForm(UserCreationForm):
@@ -54,4 +54,24 @@ class ProfileEdit(forms.ModelForm):
             except CustomUser.DoesNotExist:
                 return username
             raise forms.ValidationError('Username "%s" is already in use' % username)
+
+
+class OTPVerificationForm(forms.ModelForm):
+    class Meta:
+        model = OTPMobileVerification
+        fields = ('otp',)
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(OTPVerificationForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        if self.is_valid():
+            otp = self.cleaned_data['otp']
+            try:
+                user = CustomUser.objects.get(username = self.request.session.get('username') )
+                otp_entry = OTPMobileVerification.objects.get(user=user)
+            except Exception as e:
+                raise forms.ValidationError("User does not exist") 
+            if otp != otp_entry.otp:
+                raise forms.ValidationError("Incorrect OTP")
                 
