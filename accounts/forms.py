@@ -2,7 +2,7 @@ from dataclasses import field
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import authenticate
-from accounts.models import CustomUser, OTPMobileVerification
+from accounts.models import CustomUser, OTPMobileVerification, USER_TYPE
 
 
 class RegistrationForm(UserCreationForm):
@@ -74,4 +74,16 @@ class OTPVerificationForm(forms.ModelForm):
                 raise forms.ValidationError("User does not exist") 
             if otp != otp_entry.otp:
                 raise forms.ValidationError("Incorrect OTP")
+
+
+class OrganizationAndHealthcareProfessionalSearchForm(forms.Form):
+    name = forms.CharField(label="Name",max_length=50,required=False)
+    USER_TYPE_SEARCH = USER_TYPE.copy()
+    USER_TYPE_SEARCH.append(('all','All'))
+    USER_TYPE_SEARCH.remove(('patient','Patient'))
+    user_type = forms.ChoiceField(label="Type",choices = USER_TYPE_SEARCH,required=False)
+
+    # class Meta:
+    #     model = CustomUser
+    #     fields=('official_name','user_type')
                 

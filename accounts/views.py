@@ -3,11 +3,12 @@ import email
 from multiprocessing import context
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 
 from accounts.models import CustomUser
 from .helpers import send_otp_email
-from accounts.forms import RegistrationForm, UserAuthenticationForm, ProfileEdit, OTPVerificationForm
+from accounts.forms import RegistrationForm, UserAuthenticationForm, ProfileEdit, OTPVerificationForm, OrganizationAndHealthcareProfessionalSearchForm
 
 def registration_view(request):
     context = {}
@@ -93,7 +94,7 @@ def login_view(request):
     context['login_form'] = form
     return render(request,'registration/login.html',context)
 
-
+@login_required(login_url='/login/')
 def editprofile(request):
     context = {}
     
@@ -118,19 +119,40 @@ def editprofile(request):
     
     def get_object(self):
         return self.request.user
-  
-def patient_view(request):
-    return render(request, 'patient_index.html') 
 
+@login_required(login_url='/login/')
+def patient_view(request):
+    context = {}
+    user=request.user
+    if request.POST:
+        form = OrganizationAndHealthcareProfessionalSearchForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data.get('user_type') == 'all':
+                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name'))
+            else:
+                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name'),user_type = form.cleaned_data.get('user_type'))
+    else:
+        form = OrganizationAndHealthcareProfessionalSearchForm(initial={'user_type':'all'})
+        users = CustomUser.objects.all()
+        
+    #TODO: add the default results here    
+    context['org_healthcare_profs'] = users
+    context['search_form'] = form   
+    return render(request, 'patient_index.html',context) 
+
+@login_required(login_url='/login/')
 def hospital_view(request):
     return render(request, 'hospital_index.html') 
 
+@login_required(login_url='/login/')
 def insurance_view(request):
     return render(request, 'ins_index.html')
 
+@login_required(login_url='/login/')
 def pharmacy_view(request):
     return render(request, 'pharmacy_index.html')
 
+@login_required(login_url='/login/')
 def healthcare_prof_view(request):
     return render(request, 'health_index.html')
 

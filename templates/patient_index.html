@@ -1,12 +1,64 @@
 {% extends 'base.html' %}
 
-{% block title %}Welcome Patient
+{% block title %}
 
+Welcome Patient
 
 {% endblock %}
 
 {% block content %}
 
-<a href="{%url 'edit'%}">Edit</a>
+<a href="{%url 'edit'%}">Edit Profile</a>
+
+<form method="post">
+    {%csrf_token%}
+    {% for field in search_form%} 
+        <p>
+            {{field.label_tag}}
+            {{field}}
+            {%if field.help_text%}
+                <small style="color: grey;">{{field.help_text}}</small>
+            {%endif%}
+        </p>
+    
+        
+    {%endfor%}
+    {%for field in search_form%}
+        {%for error in field.errors%}
+                <p>
+                    <small style="color: red;">{{error}}</small>
+                </p>
+        {%endfor%}
+    {%endfor%}
+    {%if search_form.non_field_errors%} 
+        <div style="color: red;">
+            <p>{{search_form.non_field_errors}}</p>
+        </div>
+    {%endif%}
+    <button type="submit">Search</button>
+</form>
+<br><br>
+{%if org_healthcare_profs|length > 0 %}
+<table id="table">
+    <tr class="header">
+      <th >Organization Name</th>
+      <th >Type</th>
+      <th >Location</th>
+      <th >Mobile</th>
+      <th >Email</th>
+    </tr>
+    {%for user in org_healthcare_profs%}
+    <tr>
+        <td>{{user.official_name}}</td>
+        <td>{{user.user_type}}</td>
+        <td>{{user.address}}</td>
+        <td>{{user.mobile}}</td>
+        <td>{{user.email}}</td>
+      </tr>
+    {%endfor%}
+</table>
+{%else%}
+ No results found
+{%endif%}
 
 {% endblock %}
