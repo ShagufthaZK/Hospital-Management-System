@@ -3,6 +3,7 @@ import email
 from enum import unique
 from random import choices
 from tabnanny import verbose
+from tkinter import CASCADE
 from unittest.util import _MAX_LENGTH
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
@@ -93,3 +94,53 @@ class CustomUser(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
+
+# class Product(models.Model):
+#     medicine_name=models.CharField(max_length=100)
+#     pharmacy_name = models.CharField(max_length=100)
+#     price = models.IntegerField(default=0)  # cents
+#     address=models.CharField(max_length=150)
+
+# def __str__(self):
+#         return self.name
+
+# class Category(models.Model):
+#     name = models.CharField(max_length=20)
+
+#     @staticmethod
+#     def get_all_categories():
+#         return Category.objects.all()
+
+
+#     def __str__(self):
+#         return self.name
+
+class Product(models.Model):
+    id=models.IntegerField(default=0,primary_key=True,null=False)
+    name = models.CharField(max_length=50,default='')
+    price = models.IntegerField(default=0)
+    pharmacy_name = models.CharField(max_length=100,default='')
+    # category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
+    address = models.CharField(max_length=200, default='' , null=True , blank=True)
+    # image = models.ImageField(upload_to='uploads/products/')
+
+
+    def __str__(self):
+       return self.name
+
+class Cart(models.Model):
+    id = models.IntegerField(primary_key=True, null=False)
+    product = models.IntegerField()
+    quantity = models.IntegerField(default=0)
+    amount = models.FloatField(default=0)
+
+    # def __str__(self):
+    #     return self.id
+
+
+class InsuranceClaim(models.Model):
+    id = models.IntegerField(primary_key=True, null=False)
+    user = models.IntegerField(null=False)
+    amount = models.FloatField(default=0)
+    claimed = models.BooleanField(default=False)
+    

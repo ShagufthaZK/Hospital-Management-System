@@ -11,6 +11,12 @@ class RegistrationForm(UserCreationForm):
         model = CustomUser
         fields = ('email','username','password1','password2','official_name','mobile','address','user_type')
 
+class CartForm(UserCreationForm):
+    email = forms.EmailField(max_length=60, help_text="Required, add email id")
+    class Meta:
+        model = CustomUser
+        fields = ('email','username','password1','password2','official_name','mobile','address','user_type')
+
 
 class UserAuthenticationForm(forms.ModelForm):
 

@@ -8,5 +8,31 @@
 {% block content %}
 
 <a href="{%url 'edit'%}">Edit</a>
+<a href="{%url 'cart_name'%}">Cart</a>
+
+
+<div class="container">
+   <div class="border rounded p-4 m-4">
+
+    <input type="text" value="claim">
+        <p class="display-4 pl-4 ml-4">Your Cart</p>
+        <hr>
+       
+        <form method="post" >
+            {% csrf_token %}
+                <input type="hidden" value="products">
+                {% for product in products%}
+               <li> {{product}} - {{product.pharmacy_name}} - {{product.price}}</li>
+            
+               <input type="text" hidden='True' name="{{product.id}}" value='{{product.id}}'>
+               <input type="text" name="{{product.name}}" id="q{{forloop.counter0}}">
+               {% endfor %}  
+
+               <li>
+               <input type="submit" size ='100px' name="Add">Add To Cart</button>
+            </li>
+        </form>        
+</div>
+
 
 {% endblock %}

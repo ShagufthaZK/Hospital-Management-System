@@ -1,13 +1,17 @@
 import email
+import ast
+from itertools import product
 from multiprocessing import context
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse_lazy
 from accounts.forms import RegistrationForm, UserAuthenticationForm, ProfileEdit, UserChangeForm
+from .models import Product, Cart
 
 def registration_view(request):
     context = {}
     if request.POST:
+        print("Inside Registration")
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
@@ -82,9 +86,47 @@ def editprofile(request):
     
     def get_object(self):
         return self.request.user
-
-
     
     
 def patient_view(request):
-    return render(request, 'patient_index.html')    
+    
+    return render(request, 'patient_index.html')   
+
+def cart(request):
+    productsss = Product.objects.all()
+    #  print(productsss.values)
+    #  print(request.POST)
+
+    if request.POST:
+        res = request.POST
+        products_dict = {}
+        for i in productsss:
+            products_dict[i.id] = {'quantity':res[i.name], 'cost_per_medicine':i.price}
+        print(products_dict)
+        amount = add_to_cart(products_dict)
+    else:
+        return render(request, 'patient_index.html',{'products':productsss})
+
+    return redirect(f'/payments/views/homepage?amount={amount}', amount=amount)
+    
+    # return render(request, 'payments_template/payment_success.html', {'amount':amount})
+    
+    
+
+def add_to_cart(cart_dict):
+    amount=0
+    for k,v in cart_dict.items():
+        # item = Cart(product=k, quantity=v)
+        amount+=ast.literal_eval(v['quantity'])*v['cost_per_medicine']
+        print(amount)
+        item = Cart(product=k, quantity=v['quantity'], amount=amount)
+        item.save()
+    return amount
+
+
+
+
+   
+    
+
+

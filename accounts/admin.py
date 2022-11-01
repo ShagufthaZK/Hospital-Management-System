@@ -1,6 +1,6 @@
 # accounts/admin.py
 from django.contrib import admin
-from .models import CustomUser
+from .models import CustomUser, InsuranceClaim,Product, Cart
 from django.contrib.auth.admin import UserAdmin
 
 #to create a custom admin console
@@ -15,3 +15,6 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser,CustomUserAdmin)
+admin.site.register(Product)
+admin.site.register(Cart)
+admin.site.register(InsuranceClaim)
