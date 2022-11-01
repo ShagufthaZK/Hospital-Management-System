@@ -16,8 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic.base import TemplateView
-from accounts.views import editprofile, registration_view, logout_view, login_view, patient_view, editprofile, hospital_view, insurance_view, pharmacy_view, healthcare_prof_view, otp_email_view
-
+from accounts.views import * #editprofile, registration_view, logout_view, login_view, patient_view, editprofile, hospital_view, insurance_view, pharmacy_view, healthcare_prof_view, otp_email_view, upload_file_view, show_files_view
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
@@ -31,6 +32,12 @@ urlpatterns = [
     path('insurance_index/', insurance_view, name="insurance_index"),
     path('pharmacy_index/', pharmacy_view, name="pharmacy_index"),
     path('health_prof_index/', healthcare_prof_view, name="health_prof_index"),
-    path('edit/',editprofile, name="edit")
+    path('edit/',editprofile, name="edit"),
+    path('upload_file/',upload_file_view, name="upload_file"),
+    path('show_file/',show_files_view, name="show_file"),
+    path('show_file/<int:pk>',delete_file_view, name="delete_file"),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

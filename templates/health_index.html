@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+Welcome Healthcare Professional!
+
+{% endblock %}
+
+{% block content %}
+
+<a href="{%url 'edit'%}">Edit Profile</a>
+<a href="{%url 'show_file'%}">View Files</a>
+
+{%endblock%}

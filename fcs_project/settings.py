@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 #added to read the env file
 import environ
 
@@ -152,3 +152,8 @@ EMAIL_PORT = "587"
 EMAIL_HOST_USER = env('FROM_EMAIL')
 EMAIL_HOST_PASSWORD = env('FROM_EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
+
+
+#for upload directory for files
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_URL = "/media/"

@@ -2,7 +2,7 @@ from dataclasses import field
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import authenticate
-from accounts.models import CustomUser, OTPMobileVerification, USER_TYPE
+from accounts.models import CustomUser, OTPMobileVerification, USER_TYPE, UserFiles
 
 
 class RegistrationForm(UserCreationForm):
@@ -86,4 +86,12 @@ class OrganizationAndHealthcareProfessionalSearchForm(forms.Form):
     # class Meta:
     #     model = CustomUser
     #     fields=('official_name','user_type')
+                
+class FileUploadForm(forms.ModelForm):
+    class Meta:
+        model = UserFiles
+        fields = ('file_name','file',)
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(FileUploadForm, self).__init__(*args, **kwargs)
                 

@@ -1,13 +1,31 @@
 <!-- templates/base.html -->
 <!DOCTYPE html>
 <html>
+  
 <head>
   <meta charset="utf-8">
   <title>{% block title %}Django Auth Tutorial{% endblock %}</title>
   {%if request.user.is_authenticated%}
   
       {% comment %} {%if request.user.user_type=="patient"%} {% endcomment %}
-    <p><a href="{%url 'patient_index'%}">Home</a> | <a href="{%url 'logout'%}">Logout</a></p>
+    <p>
+      {%ifequal request.user.user_type  'patient'%}
+        <a href="{%url 'patient_index'%}">Home</a> 
+      {%endifequal%}
+      {%ifequal request.user.user_type  'hospital'%}
+        <a href="{%url 'hospital_index'%}">Home</a> 
+      {%endifequal%}
+      {%ifequal request.user.user_type  'pharmacy'%}
+        <a href="{%url 'insurance_index'%}">Home</a> 
+      {%endifequal%}
+      {%ifequal request.user.user_type  'insurance'%}
+        <a href="{%url 'pharmacy_index'%}">Home</a> 
+      {%endifequal%}
+      {%ifequal request.user.user_type  'professional'%}
+        <a href="{%url 'health_prof_index'%}">Home</a> 
+      {%endifequal%}
+      
+      | <a href="{%url 'logout'%}">Logout</a></p>
     <p>Hello, {{request.user.username}} </p>
       {% comment %} {%endif%} {% endcomment %}
   {%else%}

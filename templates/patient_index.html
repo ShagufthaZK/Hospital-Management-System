@@ -9,6 +9,7 @@ Welcome Patient
 {% block content %}
 
 <a href="{%url 'edit'%}">Edit Profile</a>
+<a href="{%url 'show_file'%}">View Files</a>
 
 <form method="post">
     {%csrf_token%}
@@ -39,6 +40,15 @@ Welcome Patient
 </form>
 <br><br>
 {%if org_healthcare_profs|length > 0 %}
+
+<style>
+    table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 8px;
+  }
+</style>
+
 <table id="table">
     <tr class="header">
       <th >Organization Name</th>

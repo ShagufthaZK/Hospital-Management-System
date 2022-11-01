@@ -101,3 +101,13 @@ class OTPMobileVerification(models.Model):
     otp = models.CharField(max_length=6)
     generated_at = models.DateTimeField(auto_now = True)
     valid_till = models.IntegerField(default=60)#otp is valid till 60s after generated_at timestamp
+
+class UserFiles(models.Model):
+    #TODO: FIX THIS LATER, WE NEED A USER ASSOCIATED TO A FILE
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    file_name = models.CharField(max_length=30,blank=True)
+    file = models.FileField(upload_to="users/files/")
+
+    def delete(self, *args,**kwargs):
+        self.file.delete()
+        super().delete(*args,**kwargs)

@@ -6,9 +6,9 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 
-from accounts.models import CustomUser
+from accounts.models import CustomUser, UserFiles
 from .helpers import send_otp_email
-from accounts.forms import RegistrationForm, UserAuthenticationForm, ProfileEdit, OTPVerificationForm, OrganizationAndHealthcareProfessionalSearchForm
+from accounts.forms import RegistrationForm, UserAuthenticationForm, ProfileEdit, OTPVerificationForm, OrganizationAndHealthcareProfessionalSearchForm, FileUploadForm
 
 def registration_view(request):
     context = {}
@@ -124,36 +124,45 @@ def editprofile(request):
 def patient_view(request):
     context = {}
     user=request.user
+    if user.user_type != 'patient':
+        return redirect('login')
     if request.POST:
         form = OrganizationAndHealthcareProfessionalSearchForm(request.POST)
         if form.is_valid():
             if form.cleaned_data.get('user_type') == 'all':
-                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name'))
+                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name')).exclude(user_type="patient")
             else:
-                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name'),user_type = form.cleaned_data.get('user_type'))
+                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name'),user_type = form.cleaned_data.get('user_type')).exclude(user_type="patient")
     else:
         form = OrganizationAndHealthcareProfessionalSearchForm(initial={'user_type':'all'})
-        users = CustomUser.objects.all()
+        users = CustomUser.objects.exclude(user_type="patient")
         
-    #TODO: add the default results here    
     context['org_healthcare_profs'] = users
     context['search_form'] = form   
     return render(request, 'patient_index.html',context) 
 
 @login_required(login_url='/login/')
 def hospital_view(request):
+    if request.user.user_type != 'hospital':
+        return redirect('login')
     return render(request, 'hospital_index.html') 
 
 @login_required(login_url='/login/')
 def insurance_view(request):
+    if request.user.user_type != 'insurance':
+        return redirect('login')
     return render(request, 'ins_index.html')
 
 @login_required(login_url='/login/')
 def pharmacy_view(request):
+    if request.user.user_type != 'pharmacy':
+        return redirect('login')
     return render(request, 'pharmacy_index.html')
 
 @login_required(login_url='/login/')
 def healthcare_prof_view(request):
+    if request.user.user_type != 'professional':
+        return redirect('login')
     return render(request, 'health_index.html')
 
 
@@ -184,3 +193,34 @@ def otp_email_view(request):
     return render(request,'registration/otp.html',context)
 
      
+@login_required(login_url='/login/')
+def show_files_view(request):
+    context={}
+    files = UserFiles.objects.filter(user=request.user)
+    context['files'] = files
+    return render(request,"show_files.html",context)
+
+def delete_file_view(request,pk):
+    if request.POST:
+        file = UserFiles.objects.get(pk=pk)
+        file.delete()
+    return redirect('show_file')
+
+@login_required(login_url='/login/')
+def upload_file_view(request):
+    context={}
+    user = request.user
+    if not user.is_authenticated: 
+         return redirect('login')
+    if request.POST:
+        form = FileUploadForm(request.POST,request.FILES,request=request)#, instance=request.user,request=request)
+        if form.is_valid():
+            print(request.user.official_name)
+            file = form.save(commit=False)
+            file.user = request.user
+            file.save()
+            return redirect('show_file')
+    else:
+        form = FileUploadForm(request=request)#instance=request.user,request=request)
+    context['file_form'] = form
+    return render(request,"upload_file.html",context) 
