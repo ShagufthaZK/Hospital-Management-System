@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+#added to read the env file
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -39,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
-
+    'payments',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -131,3 +139,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "accounts.CustomUser"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+
+#FROM_EMAIL = "no-reply@fcs17.com"
+
+# SMS_BACKEND = 'sms.backends.twilio.SmsBackend'
+# TWILIO_ACCOUNT_SID = 'live_redacted-twilio-account-sid'
+# TWILIO_AUTH_TOKEN = 'live_redacted-twilio-auth-token'
+
+
+#EMAIL settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = "587"
+#TODO: remove these and use env variables before pushing to github
+EMAIL_HOST_USER = env('FROM_EMAIL')
+EMAIL_HOST_PASSWORD = env('FROM_EMAIL_PASSWORD')
+EMAIL_USE_TLS = True
+
+
+#for upload directory for files
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_URL = "/media/"

@@ -1,0 +1,52 @@
+<!-- templates/home.html-->
+{% extends 'base.html' %}
+
+{% block title %}Uploaded Files{% endblock %}
+
+{% block content %}
+<a href="{%url 'upload_file'%}">Upload Files</a><br><br>
+
+    {%if files|length > 0%}
+        <style>
+            table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+        </style>
+        <table id="table">
+            <tr class="header">
+            <th >File Name</th>
+            <th >File</th>
+            <th >Delete</th>
+            </tr>
+            {%for file in files%}
+            <tr>
+                <td>{{file.file_name}}</td>
+                <td><a href="{{file.file.url}}" target="_blank">Download</a></td>
+                <td>
+                    <form method="post" action="{%url 'delete_file' file.pk%}">
+                        {%csrf_token%}
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+    {%else%}
+        No files have been uploaded by you yet
+    {%endif%}
+    <!-- {%for field in file_form%}
+        {%for error in field.errors%}
+                <p>
+                    <small style="color: red;">{{error}}</small>
+                </p>
+        {%endfor%}
+    {%endfor%}
+    {%if file_form.non_field_errors%} 
+        <div style="color: red;">
+            <p>{{file_form.non_field_errors}}</p>
+        </div>
+    {%endif%} -->
+
+{% endblock %}

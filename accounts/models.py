@@ -1,5 +1,6 @@
 
 import email
+from email.policy import default
 from enum import unique
 from random import choices
 from tabnanny import verbose
@@ -58,6 +59,7 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser):
     
     email = models.EmailField(verbose_name='email',max_length=60,unique=True)
+    is_email_verified = models.BooleanField(default=False)
     username = models.CharField(max_length=30,unique=True)
 
     ##THESE FIELDS ARE MANDATORY WHEN USING ABSTRACTBASEUSER CLASS
@@ -72,7 +74,6 @@ class CustomUser(AbstractBaseUser):
     official_name = models.CharField(max_length=50)
     address = models.CharField(max_length=50)
     mobile = models.IntegerField(default=0)
-    
     is_approved = models.BooleanField(default=False)
     user_type = models.CharField(max_length=30,choices=USER_TYPE)
 
@@ -144,3 +145,19 @@ class InsuranceClaim(models.Model):
     amount = models.FloatField(default=0)
     claimed = models.BooleanField(default=False)
     
+
+class OTPMobileVerification(models.Model):
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True)
+    otp = models.CharField(max_length=6)
+    generated_at = models.DateTimeField(auto_now = True)
+    valid_till = models.IntegerField(default=60)#otp is valid till 60s after generated_at timestamp
+
+class UserFiles(models.Model):
+    #TODO: FIX THIS LATER, WE NEED A USER ASSOCIATED TO A FILE
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    file_name = models.CharField(max_length=30,blank=True)
+    file = models.FileField(upload_to="users/files/")
+
+    def delete(self, *args,**kwargs):
+        self.file.delete()
+        super().delete(*args,**kwargs)
