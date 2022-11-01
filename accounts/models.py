@@ -51,6 +51,7 @@ class CustomUserManager(BaseUserManager):
         user.is_superuser = True
         user.is_staff = True
         user.is_approved = True
+        user.is_email_verified = True
         user.save(using=self._db)
         return user
 
@@ -103,7 +104,6 @@ class OTPMobileVerification(models.Model):
     valid_till = models.IntegerField(default=60)#otp is valid till 60s after generated_at timestamp
 
 class UserFiles(models.Model):
-    #TODO: FIX THIS LATER, WE NEED A USER ASSOCIATED TO A FILE
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     file_name = models.CharField(max_length=30,blank=True)
     file = models.FileField(upload_to="users/files/")
@@ -111,3 +111,7 @@ class UserFiles(models.Model):
     def delete(self, *args,**kwargs):
         self.file.delete()
         super().delete(*args,**kwargs)
+
+class SharedFiles(models.Model):
+    file = models.ForeignKey(UserFiles,on_delete=models.CASCADE)
+    shared_to = models.ForeignKey(CustomUser,on_delete=models.CASCADE)

@@ -4,7 +4,7 @@
 {% block title %}Uploaded Files{% endblock %}
 
 {% block content %}
-<a href="{%url 'upload_file'%}">Upload Files</a><br><br>
+<a href="{%url 'upload_file'%}">Upload Files</a> | <a href="{%url 'show_shared_file'%}">View Shared Files</a><br><br>
 
     {%if files|length > 0%}
         <style>
@@ -19,6 +19,7 @@
             <th >File Name</th>
             <th >File</th>
             <th >Delete</th>
+            <th>Share</th>
             </tr>
             {%for file in files%}
             <tr>
@@ -28,6 +29,12 @@
                     <form method="post" action="{%url 'delete_file' file.pk%}">
                         {%csrf_token%}
                         <button type="submit">Delete</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" action="{%url 'share_file' file.pk%}">
+                        {%csrf_token%}
+                        <button type="submit">Share</button>
                     </form>
                 </td>
             </tr>

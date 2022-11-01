@@ -36,7 +36,9 @@ urlpatterns = [
     path('upload_file/',upload_file_view, name="upload_file"),
     path('show_file/',show_files_view, name="show_file"),
     path('show_file/<int:pk>',delete_file_view, name="delete_file"),
-
+    path('share_file/<int:pk>',share_file_view, name="share_file"),
+    path('share_with/<int:pk>/<int:pk1>',share_file_with_view, name="share_file_with"),
+    path('show_shared_file/',show_shared_files_view, name="show_shared_file"),
 ]
 
 if settings.DEBUG:

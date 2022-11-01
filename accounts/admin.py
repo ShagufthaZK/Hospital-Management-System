@@ -1,6 +1,6 @@
 # accounts/admin.py
 from django.contrib import admin
-from .models import CustomUser, OTPMobileVerification, UserFiles
+from .models import CustomUser, OTPMobileVerification, SharedFiles, UserFiles
 from django.contrib.auth.admin import UserAdmin
 
 #to create a custom admin console
@@ -15,3 +15,4 @@ class CustomUserAdmin(UserAdmin):
 admin.site.register(CustomUser,CustomUserAdmin)
 admin.site.register(OTPMobileVerification)
 admin.site.register(UserFiles)#UserFiles
+admin.site.register(SharedFiles)
