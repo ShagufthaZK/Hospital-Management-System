@@ -16,13 +16,26 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
+from django.db.models import Q
 
 from accounts.models import CustomUser, UserFiles
 from .helpers import send_otp_email
-from accounts.forms import RegistrationForm, UserAuthenticationForm, ProfileEdit, OTPVerificationForm, OrganizationAndHealthcareProfessionalSearchForm, FileUploadForm
+from accounts.forms import *#RegistrationForm, UserAuthenticationForm, ProfileEdit, OTPVerificationForm, OrganizationAndHealthcareProfessionalSearchForm, FileUploadForm
 
 def registration_view(request):
     context = {}
+    user = request.user
+    if user.is_authenticated:
+            if user.user_type=='patient':
+                    return redirect("patient_index") 
+            elif user.user_type=='hospital':
+                    return redirect("hospital_index")
+            elif user.user_type=='pharmacy':
+                    return redirect("pharmacy_index")
+            elif user.user_type=='insurance':
+                    return redirect("insurance_index")
+            else:
+                    return redirect("health_prof_index")
     if request.POST:
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -277,3 +290,26 @@ def add_to_cart(cart_dict):
     
 
 
+@login_required(login_url='/login/')
+def share_file_view(request,pk):
+    context = {}
+    print(request.user.username)
+    users = CustomUser.objects.exclude(username=request.user.username)
+    context['users'] = users
+    context['file_pk'] = pk
+    return render(request,'share_with.html',context)
+
+@login_required(login_url='/login/')
+def share_file_with_view(request,pk,pk1):
+    file = UserFiles.objects.get(pk=pk)
+    user = CustomUser.objects.get(pk=pk1)
+    shared_file = SharedFiles.objects.create(file=file,shared_to=user)
+    shared_file.save()
+    return redirect('show_file')
+
+@login_required(login_url='/login/')
+def show_shared_files_view(request):
+    context = {}
+    context['shared_files'] = SharedFiles.objects.filter(Q(shared_to=request.user)|Q(file__user=request.user)) #filter(shared_to.official_name=request.user.official_name)
+    return render(request,'shared_files.html',context)
+    

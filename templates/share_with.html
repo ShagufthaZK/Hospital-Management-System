@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+Share with
+
+{% endblock %}
+
+{%block content%}
+<h2> Share With</h2>
+<style>
+    table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 8px;
+}
+</style>
+<table id="table">
+    <tr class="header">
+    <th >User Name</th>
+    <th >User Type</th>
+    <th>Share</th>
+    </tr>
+    {%for user in users%}
+    <tr>
+        <td>{{user.official_name}}</td>
+        <td>{{user.user_type}}</td>
+        <td>
+            <form method="post" action="{%url 'share_file_with' file_pk user.pk%}">
+                {%csrf_token%}
+                <button type="submit">Share</button>
+            </form>
+        </td>
+    </tr>
+    {%endfor%}
+</table>
+
+{%endblock content %}
