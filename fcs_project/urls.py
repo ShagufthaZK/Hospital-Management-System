@@ -47,13 +47,11 @@ urlpatterns = [
     path('upload_file/',upload_file_view, name="upload_file"),
     path('show_file/',show_files_view, name="show_file"),
     path('show_file/<int:pk>',delete_file_view, name="delete_file"),
-
-]
-    # path('payments/views/claim_refund/',claim, name="refund_name"),
-
-    # path('payments/views/get_insurance', get_insurance, name="get_insurance")
+    path('payments/views/claim_refund/',claim, name="refund_name"),
+    path('payments/views/get_insurance', get_insurance, name="get_insurance"),
+    path('payments/views/insurance_claimed', insurance_claimed, name="insurance_claimed")
     # path('', homepage, name='index'),
-    
+]
 
 
 if settings.DEBUG:

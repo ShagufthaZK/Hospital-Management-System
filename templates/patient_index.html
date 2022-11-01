@@ -10,13 +10,14 @@ Welcome Patient
 
 <a href="{%url 'edit'%}">Edit</a>
 <a href="{%url 'cart_name'%}">Cart</a>
+<a href="{%url 'refund_name'%}">Claim</a>
 
 
 <div class="container">
    <div class="border rounded p-4 m-4">
 
     <input type="text" value="claim">
-        <p class="display-4 pl-4 ml-4">Your Cart</p>
+        
         <hr>
        
         <form method="post" >
@@ -30,12 +31,11 @@ Welcome Patient
                {% endfor %}  
 
                <li>
-               <input type="submit" size ='100px' name="Add">Add To Cart</button>
+               <input type="submit" size ='100px' name="Add" value="Add To Cart"></button>
             </li>
         </form>        
 </div>
-
-<a href="{%url 'edit'%}">Edit Profile</a>
+<br>
 <a href="{%url 'show_file'%}">View Files</a>
 
 <form method="post">

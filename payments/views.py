@@ -1,6 +1,5 @@
 from multiprocessing import context
-from django.shortcuts import render
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import razorpay
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseBadRequest
@@ -39,13 +38,13 @@ def homepage(request):
 
 def claim(request):
     if request.method == 'GET':
-        return render(request, 'payments_template/claim_html.html')
+        return render(request, 'payments/claim_html.html')
     else:
         res = request.POST
         print(res['claim'])
         item = InsuranceClaim(user=1, amount=float(res['claim']))
         item.save()
-        return render(request, 'payments_template/claim_html.html')
+        return render(request, 'payments/claim_html.html')
 
 
 @csrf_exempt
@@ -105,16 +104,21 @@ def paymenthandler(request):
 	# return HttpResponseBadRequest()
 
 
-# def get_insurance(request):
-#     unclaimed = InsuranceClaim.objects.filter(claimed=False)
-#     context = {}
-#     context['unclaimed'] = unclaimed
-#     return render(request, 'insurance_claim.html', context)
+def get_insurance(request):
+    print(request.POST)
+    unclaimed = InsuranceClaim.objects.filter(claimed=False)
+    context = {}
+    context['unclaimed'] = unclaimed
+    return render(request, 'insurance_claim.html', context)
 
 
-# def insurance_claimed(request):
-#     unclaimed = InsuranceClaim.objects.filter(claimed=False)
-#     context = {}
-#     context['unclaimed'] = unclaimed
-#     return render(request, 'insurance_claim.html', context)
+def insurance_claimed(request):
+    if request.method == 'GET':
+        return redirect('get_insurance')
+    else:
+        res = request.POST
+        unclaimed = InsuranceClaim.objects.get(id=res['claim_id'])
+        unclaimed.claimed = True
+        unclaimed.save()
+        return render(request, 'payments/claim_successful.html')
     
