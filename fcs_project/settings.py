@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 #added to read the env file
 import environ
+from decouple import config
 
 env = environ.Env()
 environ.Env.read_env()
@@ -28,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-zny74v+*1vnzx=w@94a28+*za6#9%^*rkay&f*31vkeqnm=g8+'
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
