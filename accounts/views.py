@@ -313,3 +313,20 @@ def show_shared_files_view(request):
     context['shared_files'] = SharedFiles.objects.filter(Q(shared_to=request.user)|Q(file__user=request.user)) #filter(shared_to.official_name=request.user.official_name)
     return render(request,'shared_files.html',context)
     
+def user_click(request):
+    context={}
+    user = request.user
+    if not user.is_authenticated: 
+         return redirect('login')
+    if request.POST:
+        form = FileUploadForm(request.POST,request.FILES,request=request)#, instance=request.user,request=request)
+        if form.is_valid():
+            print(request.user.official_name)
+            file = form.save(commit=False)
+            file.user = request.user
+            file.save()
+            return render(request,"dummy.html",context)
+    else:
+        form = FileUploadForm(request=request)#instance=request.user,request=request)
+        context['file_form'] = form
+        return render(request,"userclick.html",context)

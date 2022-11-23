@@ -86,7 +86,7 @@ Welcome Patient
     </tr>
     {%for user in org_healthcare_profs%}
     <tr>
-        <td>{{user.official_name}}</td>
+        <td><a href="{%url 'userclick' %}">{{user.official_name}}</a></td>
         <td>{{user.user_type}}</td>
         <td>{{user.address}}</td>
         <td>{{user.mobile}}</td>
