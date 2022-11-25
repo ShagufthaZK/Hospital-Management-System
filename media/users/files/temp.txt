@@ -1,0 +1,56 @@
+extern printf
+extern scanf
+
+segment .text
+    global main
+
+
+main:
+	
+	mov rdi, msg
+	mov rax, 0
+	call printf
+	call printInteger
+	call printString
+	
+	mov rax, 0
+	ret
+
+printInteger:
+	
+	mov rdi, int
+	mov rsi, number
+	mov rax, 0
+	call scanf
+	mov rdi, intMsg
+	mov rsi, [number]
+	mov rax, 0
+	call printf
+	
+	
+	ret
+
+printString:
+	
+	mov rdi, str
+	mov rsi, string
+	mov rax, 0
+	call scanf
+	mov rdi, strMsg
+	mov rsi, string
+	mov rax, 0
+	call printf
+	
+	mov rax, 0
+	ret
+
+segment .bss
+	number resb 4
+	string resb 20
+
+segment .data
+	int: db "%d",10,0
+	str: db "%s",0,10
+	msg: db "Enter Integer and String:",10,0
+	intMsg: db "Number entered is %d",10,0
+	strMsg: db "String entered is: %s",10,0

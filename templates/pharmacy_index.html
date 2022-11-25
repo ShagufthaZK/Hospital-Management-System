@@ -2,7 +2,7 @@
 
 {% block title %}
 
-Welcome Patient!
+Welcome!
 
 {% endblock %}
 
@@ -10,5 +10,43 @@ Welcome Patient!
 
 <a href="{%url 'edit'%}">Edit Profile</a>
 <a href="{%url 'show_file'%}">View Files</a>
+
+<h2>Activity pending</h2>
+{%if shared_files|length > 0%}
+<style>
+    table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 8px;
+}
+</style>
+    <table id="table">
+        <tr class="header">
+        <th >File Name</th>
+        <th >From(Name)</th>
+        <th >From(User Type)</th>
+        <th >To(Name)</th>
+        <th >To(User Type)</th>
+        <th >File</th>
+        </tr>
+    {%for file in shared_files%}
+        <tr>
+            <td>{{file.file.file_name}}</td>
+            <td>{{file.file.user.official_name}}</td>
+            <td>{{file.file.user.user_type}}</td>
+            <td>{{file.shared_to.official_name}}</td>
+            <td>{{file.shared_to.user_type}}</td>
+            
+            <td><a href="{{file.file.file.url}}" target="_blank">Download</a></td>
+            {#{%if request.user.user_type==hospital%}#} 
+            <td><a href="{%url 'userclick' file.file.user.pk %}">Upload</a></td>
+            {#{%endif%}#}
+        </tr>
+
+    {%endfor%}
+{%else%}
+You have not shared any files
+{%endif%}
+
 
 {%endblock%}

@@ -2,7 +2,7 @@ from dataclasses import field
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import authenticate
-from accounts.models import CustomUser, OTPMobileVerification, USER_TYPE, UserFiles, SharedFiles
+from accounts.models import CustomUser, OTPMobileVerification, USER_TYPE, UserFiles, SharedFiles,Symptoms
 
 
 class RegistrationForm(UserCreationForm):
@@ -100,6 +100,16 @@ class FileUploadForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
         super(FileUploadForm, self).__init__(*args, **kwargs)
+        
+        
+class SymptomsForm(forms.ModelForm):
+    symp= forms.CharField(max_length=60, help_text="Enter Symptoms")
+    class Meta:
+        model = Symptoms
+        fields = ('symp',)
+    def __init__(self, *args, **kwargs):
+        super(SymptomsForm, self).__init__(*args, **kwargs)
+        
 
 # class ShareFileForm(forms.Form):
 #     select_user = forms.ChoiceField(label="Share with",choices = CustomUser.objects.all())

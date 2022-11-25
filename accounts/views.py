@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse_lazy
 from accounts.forms import RegistrationForm, UserAuthenticationForm, ProfileEdit, UserChangeForm
-from .models import Product, Cart
+from .models import Product, Cart,Symptoms,SymptomsShared
 
 
 import email
@@ -167,9 +167,14 @@ def patient_view(request):
 
 @login_required(login_url='/login/')
 def hospital_view(request):
+    context={}
+    
     if request.user.user_type != 'hospital':
         return redirect('login')
-    return render(request, 'hospital_index.html') 
+    sym=SymptomsShared.objects.exclude(completed=True)
+    context['sympto']=sym
+        
+    return render(request, 'hospital_index.html',context) 
 
 @login_required(login_url='/login/')
 def insurance_view(request):
@@ -177,11 +182,16 @@ def insurance_view(request):
         return redirect('login')
     return render(request, 'ins_index.html')
 
+
 @login_required(login_url='/login/')
 def pharmacy_view(request):
     if request.user.user_type != 'pharmacy':
         return redirect('login')
-    return render(request, 'pharmacy_index.html')
+    context = {}
+    context['shared_files'] = SharedFiles.objects.filter(Q(shared_to=request.user)|Q(file__user=request.user))
+    return render(request, 'pharmacy_index.html',context)
+
+
 
 @login_required(login_url='/login/')
 def healthcare_prof_view(request):
@@ -301,6 +311,7 @@ def share_file_view(request,pk):
 
 @login_required(login_url='/login/')
 def share_file_with_view(request,pk,pk1):
+    #user_click(request)
     file = UserFiles.objects.get(pk=pk)
     user = CustomUser.objects.get(pk=pk1)
     shared_file = SharedFiles.objects.create(file=file,shared_to=user)
@@ -312,8 +323,8 @@ def show_shared_files_view(request):
     context = {}
     context['shared_files'] = SharedFiles.objects.filter(Q(shared_to=request.user)|Q(file__user=request.user)) #filter(shared_to.official_name=request.user.official_name)
     return render(request,'shared_files.html',context)
-    
-def user_click(request):
+
+def user_click(request,pk):
     context={}
     user = request.user
     if not user.is_authenticated: 
@@ -325,8 +336,68 @@ def user_click(request):
             file = form.save(commit=False)
             file.user = request.user
             file.save()
-            return render(request,"dummy.html",context)
+            user = CustomUser.objects.get(pk=pk)
+            shared_file = SharedFiles.objects.create(file=file,shared_to=user)
+            shared_file.save()
+            #return redirect('show_file')
+            if request.user.user_type=='hospital': 
+            #     symp=Symptoms.objects.get(user=pk)
+            #     symptom=SymptomsShared.objects.get(symp=symp)
+            #     symptom.completed=True
+            #     symptom.save()
+                
+                return render(request,"out_hosp.html")
     else:
         form = FileUploadForm(request=request)#instance=request.user,request=request)
         context['file_form'] = form
         return render(request,"userclick.html",context)
+    
+def add_symptoms(request,pk):
+    context={}
+    user = request.user
+    if not user.is_authenticated: 
+         return redirect('login')
+    
+    if request.POST:
+        form = SymptomsForm(request.POST)#, instance=request.user,request=request)
+        if form.is_valid():
+            file = form.save(commit=False)
+            file.user = request.user
+            file.save()  
+            print("form saved")   
+            user = CustomUser.objects.get(pk=pk)
+            # symp = request.POST['sympto']
+            #now you can save them into related model
+            temp=SymptomsShared.objects.create(symp=file,shared_to=user) 
+            temp.save()
+            print("temp.saved")
+            return render(request,"dummy.html")
+        else:
+            form=SymptomsForm(instance=request.user)
+            context = {'form': form}
+            return render(request,'dummy.html',context)
+    else:
+        
+        form = SymptomsForm()#instance=request.user,request=request)
+        context['form'] = form
+        return render(request,"symptoms.html",context)
+    
+def symptom_valid(request,pk):
+    if request.method=='POST':
+            symp=Symptoms.objects.get(user=pk)
+            symptom=SymptomsShared.objects.get(symp=symp)
+            print(symptom.completed)
+            symptom.completed=1
+            symptom.save()
+                
+            return render(request,'hospital_index.html')
+    else:
+            # symp=Symptoms.objects.get(user=pk)
+            symptom=SymptomsShared.objects.get(id=pk)
+            print(symptom.completed)
+            symptom.completed=True
+            symptom.save()
+                
+            return redirect('hospital_index')
+        
+    return render(request,'hospital_index.html')

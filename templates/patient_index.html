@@ -86,7 +86,12 @@ Welcome Patient
     </tr>
     {%for user in org_healthcare_profs%}
     <tr>
-        <td><a href="{%url 'userclick' %}">{{user.official_name}}</a></td>
+        {%ifequal user.user_type 'hospital' %}
+        <td><a href="{%url 'symptoms' user.pk %}">{{user.official_name}}</a></td>
+        {%endifequal%}
+        {%ifequal user.user_type 'pharmacy'%}
+        <td><a href={%url 'upload_file'%}>{{user.official_name}}</a></td>
+        {%endifequal%}
         <td>{{user.user_type}}</td>
         <td>{{user.address}}</td>
         <td>{{user.mobile}}</td>

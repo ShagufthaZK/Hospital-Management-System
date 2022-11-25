@@ -11,4 +11,31 @@ Welcome Hospital!
 <a href="{%url 'edit'%}">Edit Profile</a>
 <a href="{%url 'show_file'%}">View Files</a>
 
+<style>
+    table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 8px;
+}
+</style>
+
+<table id="table">
+    <tr class="header">
+      <th >Patient Name</th>
+      <th >Symptoms</th>
+      <th >Status</th>
+      <th > Upload Doc</th>
+    </tr>
+    {%for user in sympto%}
+    <tr>
+        <td>{{user.symp.user}}</td>
+        <td>{{user.symp.symp}}</td>
+        <td>{{user.completed}}</td>
+        <td><a href="{%url 'userclick' user.symp.user.pk %}">Upload</a></td>
+        <td><a href="{%url 'symptom_valid' user.pk %}">Verification</a></td>
+        
+      </tr>
+    {%endfor%}
+</table>
+
 {%endblock%}

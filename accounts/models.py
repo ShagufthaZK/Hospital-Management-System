@@ -85,7 +85,7 @@ class CustomUser(AbstractBaseUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.username
+        return self.username    
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
@@ -165,3 +165,17 @@ class UserFiles(models.Model):
 class SharedFiles(models.Model):
     file = models.ForeignKey(UserFiles,on_delete=models.CASCADE)
     shared_to = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    
+    
+class Symptoms(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    symp = models.CharField(max_length=100,default='')
+    def __str__(self):
+        return self.symp +' | ' +  str(self.completed)
+    
+class SymptomsShared(models.Model):
+    symp=models.ForeignKey(Symptoms,on_delete=models.CASCADE)
+    shared_to=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    completed=models.BooleanField(default=False)
+    
+    

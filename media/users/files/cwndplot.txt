@@ -1,0 +1,14 @@
+
+import numpy as np
+import matplotlib as plt
+from pylab import *
+
+time,values, final= np.loadtxt("tcp-example.cwnd", unpack=True)
+
+plt.plot(time,values, 'blue')
+plt.xlim([1,10])
+plt.ymin=0
+plt.xlabel("Time")
+plt.ylabel("Window Size")
+plt.title("cwnd vs time")
+plt.savefig('graph.png')
