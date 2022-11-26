@@ -347,6 +347,9 @@ def user_click(request,pk):
             #     symptom.save()
                 
                 return render(request,"out_hosp.html")
+            
+            elif request.user.user_type=='patient':
+                return render(request,"dummy2.html")
     else:
         form = FileUploadForm(request=request)#instance=request.user,request=request)
         context['file_form'] = form

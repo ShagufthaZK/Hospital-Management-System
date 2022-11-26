@@ -90,7 +90,7 @@ Welcome Patient
         <td><a href="{%url 'symptoms' user.pk %}">{{user.official_name}}</a></td>
         {%endifequal%}
         {%ifequal user.user_type 'pharmacy'%}
-        <td><a href={%url 'upload_file'%}>{{user.official_name}}</a></td>
+        <td><a href={%url 'userclick' user.pk%}>{{user.official_name}}</a></td>
         {%endifequal%}
         <td>{{user.user_type}}</td>
         <td>{{user.address}}</td>
