@@ -441,11 +441,11 @@ def add_insurance(request,pk):
             print('user is',user)
 
             print("InsuranceForm_amount.saved")
-            return render(request,"dummy.html")
+            return render(request,"dummy3.html")
         else:
             form=InsuranceForm(instance=request.user)
             context = {'form': form}
-            return render(request,'dummy.html',context)
+            return render(request,'dummy3.html',context)
     
     else:
         
@@ -535,7 +535,7 @@ def insurance_pay(request):
         else:
             send=1
    
-    return render(request,'payments/pay_amount.html',{'send':send,'user':user})
+    return render(request,'payments/pay_insurance.html',{'send':send,'user':user})
 
 
     # for a in amountshared:
