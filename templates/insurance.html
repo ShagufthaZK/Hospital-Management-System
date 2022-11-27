@@ -1,0 +1,11 @@
+
+
+{% block content %}
+<form action="" method="post">
+    {%csrf_token%}
+    <label for="name">Enter Insurance Amount: </label>
+    <input id="namefield" type="text" name="ins_amount" value=" ">
+    <input type="submit" value="OK">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+Patient-Interaction
+
+{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    {%csrf_token%}
+    <label for="name">Enter Amount: </label>
+    <input id="namefield" type="text" name="amount" value="">
+    <input type="submit" value="OK">
+    </form>
+
+{% endblock %}

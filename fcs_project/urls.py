@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic.base import TemplateView
-from accounts.views import editprofile, registration_view, logout_view, login_view, patient_view, editprofile, cart,add_to_cart
+from accounts.views import *
+# editprofile, registration_view, logout_view, login_view, patient_view, editprofile, cart,add_to_cart
 from payments.views import *
 # from payments.views import paymenthandler,homepage
 # from medicines.views import CreateCheckoutSessionView,ProductLandingPageView
@@ -29,7 +30,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('payments/views/homepage',homepage, name='payments'),
-    path('cart/',cart, name="cart_name"),
+    path('cart/',amount_pay, name="cart_name"),
+    path('ins_pending/',insurance_pay, name="ins_pay"),
+
     path('payments/views/paymenthandler/', paymenthandler, name='paymenthandler'),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('signup/',registration_view, name="signup"),
@@ -55,7 +58,12 @@ urlpatterns = [
     path('show_shared_file/',show_shared_files_view, name="show_shared_file"),
     path('userclick/<int:pk>',user_click, name="userclick"),
     path('symptoms/<int:pk>',add_symptoms, name="symptoms"),
+    path('amount/<int:pk>',add_amount, name="amount"),
+    path('insurance/<int:pk>',add_insurance, name="insurance"),
+
+
     path('hospital_index/<int:pk>',symptom_valid, name="symptom_valid"),
+   
 ]
 
 

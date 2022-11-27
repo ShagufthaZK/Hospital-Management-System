@@ -2,7 +2,8 @@ from dataclasses import field
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import authenticate
-from accounts.models import CustomUser, OTPMobileVerification, USER_TYPE, UserFiles, SharedFiles,Symptoms
+from accounts.models import *
+# Amount, CustomUser, OTPMobileVerification, USER_TYPE, UserFiles, SharedFiles,Symptoms
 
 
 class RegistrationForm(UserCreationForm):
@@ -109,6 +110,22 @@ class SymptomsForm(forms.ModelForm):
         fields = ('symp',)
     def __init__(self, *args, **kwargs):
         super(SymptomsForm, self).__init__(*args, **kwargs)
+        
+class AmountForm(forms.ModelForm):
+    amount= forms.CharField(max_length=60, help_text="Enter Amount")
+    class Meta:
+        model = Amount
+        fields = ('amount',)
+    def __init__(self, *args, **kwargs):
+        super(AmountForm, self).__init__(*args, **kwargs)
+
+class InsuranceForm(forms.ModelForm):
+    ins_amount= forms.CharField(max_length=60, help_text="Enter Amount")
+    class Meta:
+        model = Insurance
+        fields = ('ins_amount',)
+    def __init__(self, *args, **kwargs):
+        super(InsuranceForm, self).__init__(*args, **kwargs)
         
 
 # class ShareFileForm(forms.Form):

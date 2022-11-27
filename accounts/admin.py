@@ -1,6 +1,6 @@
 # accounts/admin.py
 from django.contrib import admin
-from .models import CustomUser, InsuranceClaim,Product, Cart
+from .models import CustomUser, InsuranceClaim,Product, Cart, Insurance, InsuranceShared
 from .models import CustomUser, OTPMobileVerification, UserFiles
 from .models import CustomUser, OTPMobileVerification, SharedFiles, UserFiles
 from django.contrib.auth.admin import UserAdmin
@@ -22,3 +22,5 @@ admin.site.register(InsuranceClaim)
 admin.site.register(OTPMobileVerification)
 admin.site.register(UserFiles)#UserFiles
 admin.site.register(SharedFiles)
+admin.site.register(Insurance)
+admin.site.register(InsuranceShared)

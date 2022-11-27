@@ -177,5 +177,29 @@ class SymptomsShared(models.Model):
     symp=models.ForeignKey(Symptoms,on_delete=models.CASCADE)
     shared_to=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     completed=models.BooleanField(default=False)
+
+class Amount(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    amount = models.CharField(max_length=100,default='')
+    def __str__(self):
+        return self.amount
+        #  +' | ' +  str(self.completed)
     
+class AmountShared(models.Model):
+    amount=models.ForeignKey(Amount,on_delete=models.CASCADE)
+    shared_to=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    completed=models.BooleanField(default=False)
+
+class Insurance(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    ins_amount = models.CharField(max_length=100,default='')
+    def __str__(self):
+        return self.ins_amount
+        #  +' | ' +  str(self.completed)
+    
+class InsuranceShared(models.Model):
+    ins_amount=models.ForeignKey(Insurance,on_delete=models.CASCADE)
+    shared_to=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    completed=models.BooleanField(default=False)
+
     

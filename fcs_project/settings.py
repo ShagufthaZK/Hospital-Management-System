@@ -16,8 +16,8 @@ import os
 import environ
 from decouple import config
 
-env = environ.Env()
-environ.Env.read_env()
+# env = environ.Env()
+# environ.Env.read_env()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -154,8 +154,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = "587"
 #TODO: remove these and use env variables before pushing to github
-EMAIL_HOST_USER = env('FROM_EMAIL')
-EMAIL_HOST_PASSWORD = env('FROM_EMAIL_PASSWORD')
+# EMAIL_HOST_USER = env('FROM_EMAIL')
+# EMAIL_HOST_PASSWORD = env('FROM_EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
 
 

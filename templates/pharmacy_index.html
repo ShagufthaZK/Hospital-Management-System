@@ -31,7 +31,8 @@ Welcome!
         </tr>
     {%for file in shared_files%}
         <tr>
-            <td>{{file.file.file_name}}</td>
+            <!-- <td><a href="{{file.file.file_name}}"</a></td> -->
+             <td><a href="{%url 'amount' file.file.user.pk %}">{{file.file.user.official_name}}</a></td>
             <td>{{file.file.user.official_name}}</td>
             <td>{{file.file.user.user_type}}</td>
             <td>{{file.shared_to.official_name}}</td>
@@ -39,7 +40,7 @@ Welcome!
             
             <td><a href="{{file.file.file.url}}" target="_blank">Download</a></td>
             {#{%if request.user.user_type==hospital%}#} 
-            <td><a href="{%url 'userclick' file.file.user.pk %}">Upload</a></td>
+            <td> <a href="{%url 'userclick' file.file.user.pk %}">Upload</a></td>
             {#{%endif%}#}
         </tr>
 

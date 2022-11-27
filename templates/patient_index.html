@@ -29,7 +29,8 @@ Welcome Patient
                <input type="text" hidden='True' name="{{product.id}}" value='{{product.id}}'>
                <input type="text" name="{{product.name}}" id="q{{forloop.counter0}}">
                {% endfor %}  
-
+               <form> <input type="text" id="fname" name="fname"><br>
+              </form>
                <li>
                <input type="submit" size ='100px' name="Add" value="Add To Cart"></button>
             </li>
@@ -90,6 +91,10 @@ Welcome Patient
         <td><a href="{%url 'symptoms' user.pk %}">{{user.official_name}}</a></td>
         {%endifequal%}
         {%ifequal user.user_type 'pharmacy'%}
+        <td><a href="{%url 'upload_file' %}">{{user.official_name}}</a></td>
+        {%endifequal%}
+        {%ifequal user.user_type 'insurance'%}
+        <td><a href="{%url 'upload_file' %}">{{user.official_name}}</a></td>
         <td><a href={%url 'userclick' user.pk%}>{{user.official_name}}</a></td>
         {%endifequal%}
         <td>{{user.user_type}}</td>

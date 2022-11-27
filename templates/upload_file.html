@@ -31,4 +31,12 @@
     {%endif%}
     <button type="submit">Upload</button>
 </form>
+
+{%ifequal user.user_type 'insurance' %}
+<form>
+    <form method='post' action="">
+        <input type="text" id="fname" name="fname">
+        <input type="submit" value="Submit">
+</form>
+{%endifequal%}
 {% endblock %}

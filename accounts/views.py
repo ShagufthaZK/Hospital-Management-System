@@ -5,8 +5,9 @@ from multiprocessing import context
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse_lazy
-from accounts.forms import RegistrationForm, UserAuthenticationForm, ProfileEdit, UserChangeForm
-from .models import Product, Cart,Symptoms,SymptomsShared
+from accounts.forms import *
+# RegistrationForm, UserAuthenticationForm, ProfileEdit, UserChangeForm,AmountForm
+from .models import Product, Cart,Symptoms,SymptomsShared,Amount,AmountShared,Insurance,InsuranceShared
 
 
 import email
@@ -178,6 +179,7 @@ def hospital_view(request):
 
 @login_required(login_url='/login/')
 def insurance_view(request):
+    print('ins entered')
     if request.user.user_type != 'insurance':
         return redirect('login')
     return render(request, 'ins_index.html')
@@ -292,12 +294,15 @@ def add_to_cart(cart_dict):
 
 
 
-
-
-
-
-   
-    
+     
+@login_required(login_url='/login/')
+def share_file_with_view(request,pk,pk1):
+    #user_click(request)
+    file = UserFiles.objects.get(pk=pk)
+    user = CustomUser.objects.get(pk=pk1)
+    shared_file = SharedFiles.objects.create(file=file,shared_to=user)
+    shared_file.save()
+    return redirect('show_file')
 
 
 @login_required(login_url='/login/')
@@ -309,14 +314,7 @@ def share_file_view(request,pk):
     context['file_pk'] = pk
     return render(request,'share_with.html',context)
 
-@login_required(login_url='/login/')
-def share_file_with_view(request,pk,pk1):
-    #user_click(request)
-    file = UserFiles.objects.get(pk=pk)
-    user = CustomUser.objects.get(pk=pk1)
-    shared_file = SharedFiles.objects.create(file=file,shared_to=user)
-    shared_file.save()
-    return redirect('show_file')
+
 
 @login_required(login_url='/login/')
 def show_shared_files_view(request):
@@ -384,6 +382,76 @@ def add_symptoms(request,pk):
         form = SymptomsForm()#instance=request.user,request=request)
         context['form'] = form
         return render(request,"symptoms.html",context)
+
+def add_amount(request,pk):
+    context={}
+    user = request.user
+    if not user.is_authenticated: 
+         return redirect('login')
+    
+    if request.POST:
+        form = AmountForm(request.POST)#, instance=request.user,request=request)
+        if form.is_valid():
+            file = form.save(commit=False)
+            file.user = request.user
+            file.save()  
+            print("form saved")   
+            user = CustomUser.objects.get(pk=pk)
+            # symp = request.POST['sympto']
+            #now you can save them into related model
+            temp=AmountShared.objects.create(amount=file,shared_to=user) 
+            temp.save()
+            print('file is',file)
+            print('user is',user)
+
+            print("temp_amount.saved")
+            return render(request,"dummy.html")
+        else:
+            form=AmountForm(instance=request.user)
+            context = {'form': form}
+            return render(request,'dummy.html',context)
+    
+    else:
+        
+        form = AmountForm()#instance=request.user,request=request)
+        context['form'] = form
+        return render(request,"pharmacy.html",context)
+
+def add_insurance(request,pk):
+    context={}
+    user = request.user
+    if not user.is_authenticated: 
+         return redirect('login')
+    
+    if request.POST:
+        print('entered!!')
+        form = InsuranceForm(request.POST)#, instance=request.user,request=request)
+        if form.is_valid():
+            print('valid_entered')
+            file = form.save(commit=False)
+            file.user = request.user
+            file.save()  
+            print("form saved")   
+            user = CustomUser.objects.get(pk=pk)
+            # symp = request.POST['sympto']
+            #now you can save them into related model
+            temp=InsuranceShared.objects.create(ins_amount=file,shared_to=user) 
+            temp.save()
+            print('file is',file)
+            print('user is',user)
+
+            print("InsuranceForm_amount.saved")
+            return render(request,"dummy.html")
+        else:
+            form=InsuranceForm(instance=request.user)
+            context = {'form': form}
+            return render(request,'dummy.html',context)
+    
+    else:
+        
+        form = InsuranceForm()#instance=request.user,request=request)
+        context['form'] = form
+        return render(request,"insurance.html",context)
     
 def symptom_valid(request,pk):
     if request.method=='POST':
@@ -403,4 +471,78 @@ def symptom_valid(request,pk):
                 
             return redirect('hospital_index')
         
-    return render(request,'hospital_index.html')
+def amount_valid(request,pk):
+    if request.method=='POST':
+            symp=Amount.objects.get(user=pk)
+            symptom=AmountShared.objects.get(symp=symp)
+            print(symptom.completed)
+            symptom.completed=1
+            symptom.save()
+                
+            return render(request,'hospital_index.html')
+    else:
+            # symp=Symptoms.objects.get(user=pk)
+            symptom=AmountShared.objects.get(id=pk)
+            print(symptom.completed)
+            symptom.completed=True
+            symptom.save()
+                
+            return redirect('hospital_index')
+
+def amount_pay(request):
+    amount=Amount.objects.all()
+    amountshared=AmountShared.objects.all()
+    print(amount)
+    send=0
+    for a in amountshared:
+        print('val of a is', a)
+        if a.shared_to == request.user:
+            id=a.id
+            break
+
+    for am in amount:
+        # if am.id==id:
+        print('amount is', len(am.amount)) 
+        print(am.amount)
+        if len(am.amount) !=0 :
+            send=am.amount
+            user=am.user
+            print('user to',user)
+        else:
+            send=1
+   
+    return render(request,'payments/pay_amount.html',{'send':send,'user':user})
+
+def insurance_pay(request):
+    amount=Insurance.objects.all()
+    amountshared=InsuranceShared.objects.all()
+    print(amount)
+    send=0
+    for a in amountshared:
+        print('val of a is', a)
+        if a.shared_to == request.user:
+            id=a.id
+            break
+
+    for am in amount:
+        # if am.id==id:
+        print('amount is', len(am.ins_amount)) 
+        print(am.ins_amount)
+        if len(am.ins_amount) !=0 :
+            send=am.ins_amount
+            user=am.user
+            print('user to',user)
+        else:
+            send=1
+   
+    return render(request,'payments/pay_amount.html',{'send':send,'user':user})
+
+
+    # for a in amountshared:
+    #     print('shared is', a.shared_to)
+    
+    # print('current user is', request.user)
+
+    # print('val of send is', send) 
+    
+    # return redirect(f'/payments/views/homepage?amount={send}', amount=send)
