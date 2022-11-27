@@ -494,7 +494,8 @@ def amount_pay(request):
     amount=Amount.objects.all()
     amountshared=AmountShared.objects.all()
     print(amount)
-    send=0
+    sends=[]
+    users=[]
     for a in amountshared:
         print('val of a is', a)
         if a.shared_to == request.user:
@@ -505,14 +506,21 @@ def amount_pay(request):
         # if am.id==id:
         print('amount is', len(am.amount)) 
         print(am.amount)
-        if len(am.amount) !=0 :
-            send=am.amount
-            user=am.user
-            print('user to',user)
+        if len(am.amount)!=0:
+             if am.user!='ins':
+                sends.append(am.amount)
+                users.append(am.user)
+             print('user to',am.user)
+             print('user to',type(am.user))
+
         else:
-            send=1
+            sends.append(1)
+    details = zip(sends, users)
+    context = {
+            'details': details,
+        }
    
-    return render(request,'payments/pay_amount.html',{'send':send,'user':user})
+    return render(request,'payments/pay_amount.html',context)
 
 def insurance_pay(request):
     amount=Insurance.objects.all()

@@ -30,7 +30,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('payments/views/homepage',homepage, name='payments'),
-    path('cart/',amount_pay, name="cart_name"),
+    path('pay/',amount_pay, name="cart_name"),
     path('ins_pending/',insurance_pay, name="ins_pay"),
 
     path('payments/views/paymenthandler/', paymenthandler, name='paymenthandler'),

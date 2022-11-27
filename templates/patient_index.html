@@ -8,36 +8,17 @@ Welcome Patient
 
 {% block content %}
 
-<a href="{%url 'edit'%}">Edit</a>
-<a href="{%url 'cart_name'%}">Cart</a>
-<a href="{%url 'refund_name'%}">Claim</a>
 
-
-<div class="container">
-   <div class="border rounded p-4 m-4">
-
-    <input type="text" value="claim">
-        
-        <hr>
-       
-        <form method="post" >
-            {% csrf_token %}
-                <input type="hidden" value="products">
-                {% for product in products%}
-               <li> {{product}} - {{product.pharmacy_name}} - {{product.price}}</li>
-            
-               <input type="text" hidden='True' name="{{product.id}}" value='{{product.id}}'>
-               <input type="text" name="{{product.name}}" id="q{{forloop.counter0}}">
-               {% endfor %}  
-               <form> <input type="text" id="fname" name="fname"><br>
-              </form>
-               <li>
-               <input type="submit" size ='100px' name="Add" value="Add To Cart"></button>
-            </li>
-        </form>        
-</div>
+<ul>
+<li><a href="{%url 'edit'%}">Edit</a></li>
+<li><a href="{%url 'cart_name'%}">Pending Requests</a></li>
+<li><a href="{%url 'show_file'%}">View Files</a></li>
+</ul>
 <br>
-<a href="{%url 'show_file'%}">View Files</a>
+</br>
+<div>
+<h3> Catalog</h3>
+</div>
 
 <form method="post">
     {%csrf_token%}

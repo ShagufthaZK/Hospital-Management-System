@@ -5,17 +5,25 @@
 <h1>Pending Payments- </h1>
 <br>
 </br>
-<h2> - {{user}}</h2>
 
+<table>
+  <th >Organization  </th>
+  <th >Amount</th>
+<tr>
+  {% for send, user in details %}
 <form method="post" action="/payments/views/homepage?amount={{send}}"> 
-    {%csrf_token%}
-    
-    <input type="text" id="fname" name="fname" value="{{send}}">
-    
-    <input type="submit" value="Pay Bill">
-  </form>
-
+  {%csrf_token%}
   
+ <td><label for="user">{{user}}</label> </td>
+ <td> <label for="amount"> {{  send   }}   </label>  </td>
 
+  <td><input type="submit" value="Pay Bill"></td>
 
+</form>
+</tr>
+
+{%endfor%}
+</table>
 {%endblock%}
+
+
