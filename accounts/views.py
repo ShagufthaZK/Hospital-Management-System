@@ -343,9 +343,10 @@ def user_click(request,pk):
             #     symptom=SymptomsShared.objects.get(symp=symp)
             #     symptom.completed=True
             #     symptom.save()
-                
                 return render(request,"out_hosp.html")
-            
+            elif request.user.user_type=='patient':
+                return render(request,"dummy2.html")
+                            
             elif request.user.user_type=='patient':
                 return render(request,"dummy2.html")
     else:
