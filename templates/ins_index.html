@@ -6,11 +6,16 @@
 
 {% block content %}
 <h1>Welcome Insurance Company!</h1>
-<a href="{%url 'edit'%}">Edit Profile</a>
-<a href="{%url 'show_file'%}">View Files</a>
+<ul>
+<li><a href="{%url 'edit'%}">Edit Profile</a></li>
+<br></br>
+<li><a href="{%url 'show_file'%}">View Files</a></li>
 <br>
 </br>
-<a href="{%url 'ins_pay'%}">Pending Requests</a>
+<li><a href="{%url 'ins_pay'%}">Pending Requests</a></li>
+</ul>
+
+
 
 
 {%endblock%}
