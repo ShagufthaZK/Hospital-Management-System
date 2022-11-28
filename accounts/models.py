@@ -8,6 +8,9 @@ from tkinter import CASCADE
 from unittest.util import _MAX_LENGTH
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+import hmac
+import hashlib
+import random
 
 USER_TYPE = [('patient','Patient'),('hospital','Hospital'),('pharmacy','Pharmacy'),('insurance','Insurance Company'),('professional','Healthcare Professional')]
 
@@ -77,6 +80,8 @@ class CustomUser(AbstractBaseUser):
     mobile = models.IntegerField(default=0)
     is_approved = models.BooleanField(default=False)
     user_type = models.CharField(max_length=30,choices=USER_TYPE)
+    symm_key = models.CharField(max_length=150, editable=False)
+
 
     #primary field which will be used for login
     USERNAME_FIELD = 'username'
@@ -96,6 +101,12 @@ class CustomUser(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
+    
+    def save(self, *args, **kwargs):
+        text = "symm_key"+str(random.randint(100000,999999))
+        digest_maker = hmac.new(bytes(self.password, 'utf-8'),bytes(text, 'utf-8'),hashlib.sha3_512)
+        self.symm_key = digest_maker.hexdigest()
+        super(CustomUser, self).save(*args, **kwargs)
 
 # class Product(models.Model):
 #     medicine_name=models.CharField(max_length=100)
