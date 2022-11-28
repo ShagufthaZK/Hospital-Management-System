@@ -154,9 +154,9 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = "587"
 #TODO: remove these and use env variables before pushing to github
-# EMAIL_HOST_USER = env('FROM_EMAIL')
-# EMAIL_HOST_PASSWORD = env('FROM_EMAIL_PASSWORD')
-# EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('FROM_EMAIL')
+EMAIL_HOST_PASSWORD = env('FROM_EMAIL_PASSWORD')
+EMAIL_USE_TLS = True
 
 
 #for upload directory for files

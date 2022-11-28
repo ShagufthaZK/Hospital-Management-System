@@ -15,7 +15,7 @@ razorpay_client = razorpay.Client(auth=(RAZOR_KEY_ID, RAZOR_KEY_SECRET))
 
 def homepage(request):
 	currency = 'INR'
-	amount = float(request.GET['amount'])*100 # Rs. 200
+	amount = float(request.POST['amount'])*100 # Rs. 200
 
 	# Create a Razorpay Order
 	razorpay_order = razorpay_client.order.create(dict(amount=amount,
@@ -30,7 +30,7 @@ def homepage(request):
 	context = {}
 	context['razorpay_order_id'] = razorpay_order_id
 	context['razorpay_merchant_key'] = RAZOR_KEY_ID
-	context['razorpay_amount'] = float(request.GET['amount'])
+	context['razorpay_amount'] = float(request.POST['amount'])
 	context['currency'] = currency
 	context['callback_url'] = callback_url
 

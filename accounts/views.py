@@ -501,34 +501,37 @@ def amount_valid(request,pk):
             return redirect('hospital_index')
 
 def amount_pay(request):
-    amount=Amount.objects.all()
-    amountshared=AmountShared.objects.all()
-    print(amount)
-    sends=[]
-    users=[]
-    for a in amountshared:
-        print('val of a is', a)
-        if a.shared_to == request.user:
-            id=a.id
-            break
+    
+    amountshared=AmountShared.objects.get(shared_to=request.user)
+    context={}
+    
+    context['amountshared']=amountshared
+    # print(amount)
+    # sends=[]
+    # users=[]
+    # for a in amountshared:
+    #     print('val of a is', a)
+    #     if a.shared_to == request.user:
+    #         id=a.id
+    #         break
 
-    for am in amount:
-        # if am.id==id:
-        print('amount is', len(am.amount)) 
-        print(am.amount)
-        if len(am.amount)!=0:
-             if am.user!='ins':
-                sends.append(am.amount)
-                users.append(am.user)
-             print('user to',am.user)
-             print('user to',type(am.user))
+    # for am in amount:
+    #     # if am.id==id:
+    #     print('amount is', len(am.amount)) 
+    #     print(am.amount)
+    #     if len(am.amount)!=0:
+    #          if am.user!='ins':
+    #             sends.append(am.amount)
+    #             users.append(am.user)
+    #          print('user to',am.user)
+    #          print('user to',type(am.user))
 
-        else:
-            sends.append(1)
-    details = zip(sends, users)
-    context = {
-            'details': details,
-        }
+    #     else:
+    #         sends.append(1)
+    #details = zip(sends, users)
+     #context = {
+    #         'details': details,
+    #     }
    
     return render(request,'payments/pay_amount.html',context)
 
