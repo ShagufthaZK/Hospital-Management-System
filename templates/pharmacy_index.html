@@ -32,12 +32,13 @@ Welcome!
         <th >User Type</th>
         <th >Request Payment</th>
         <th>Payment Status</th>
+        <th>Send Bill</th>
         </tr>
     {%for pr in pharmacy_requests%}
         <tr>
             <td>{{pr.prescription.file.user.official_name}}</td>
             
-            <td><a href="{{pr.prescription.file.url}}" target="_blank">Download</a></td>
+            <td><a href="{{pr.prescription.file.file.url}}" target="_blank">Download</a></td>
             <td>{{pr.verified}}</td>
             {%if pr.verified%}
                 <td>{{pr.from_user.official_name}}</td>
@@ -49,8 +50,14 @@ Welcome!
                 {%endif%}
                 {%if pr.completed%}
                 <td>Completed</td>
+                {%if pr.bill%}
+                <td>Already Sent: <a href="{{pr.bill.file.file.url}}" target="_blank">View</a></td>
+                {%else%}
+                <td><a href="{%url 'userclick' pr.pk %}">Upload and Send</a></td>
+                {%endif%}
                 {%else%}
                 <td>Pending</td>
+                <td>NA</td>
                 {%endif%}
             {%else%}
             <td>NA</td>

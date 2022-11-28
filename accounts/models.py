@@ -204,11 +204,12 @@ class AmountShared(models.Model):
     #completed=models.BooleanField(default=False)
 
 class PharmacyRequest(models.Model):
-    prescription = models.ForeignKey(SharedFiles,on_delete=models.CASCADE,null=True)
+    prescription = models.ForeignKey(SharedFiles,on_delete=models.CASCADE,null=True,related_name="prescription")
     from_user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     completed = models.BooleanField(default=False)
     payment_details = models.ForeignKey(AmountShared,null=True,on_delete=models.SET_NULL)
     verified = models.BooleanField(default=True)
+    bill = models.ForeignKey(SharedFiles,on_delete=models.SET_NULL,null=True,related_name='bill')
 
 class Insurance(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)

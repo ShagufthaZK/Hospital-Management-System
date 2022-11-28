@@ -375,19 +375,29 @@ def user_click(request,pk):
                     2. check if the new sign matches any of the existing ones
                     '''
                     files = SharedFiles.objects.filter(file__user=new_request.from_user,shared_to=request.user)
-                    for file in files:
-                         if verify_sign(key,data,file.digital_signature):
+                    for file1 in files:
+                         if verify_sign(key,data,file1.digital_signature):
                               new_request.verified = True
+                              new_request.prescription = file1
                     # existing_sign = 
                     # new_request.verified = verify_sign()
+                    
                     new_request.save()
                     print("from2 saved")
                 elif user.user_type=='insurance':
                      pass
                 return render(request,"dummy2.html")
                             
-            elif request.user.user_type=='patient':
-                return render(request,"dummy2.html")
+            elif request.user.user_type=='pharmacy':
+                pharmacy_req = PharmacyRequest.objects.get(pk=pk)
+                key = bytes(request.user.symm_key,'utf-8')
+                data = b""
+                shared_file = SharedFiles.objects.create(file=file,shared_to=pharmacy_req.prescription.file.user)
+                shared_file.digital_signature = sign(key,data)
+                shared_file.save()
+                pharmacy_req.bill = shared_file
+                pharmacy_req.save()
+                return redirect('pharmacy_index')
     else:
         form = FileUploadForm(request=request)
         context['file_form'] = form
