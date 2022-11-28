@@ -4,6 +4,7 @@ from .models import CustomUser, OTPMobileVerification
 from django.conf import settings
 import hmac
 import hashlib
+import os
 
 def send_otp_email(user):
     '''
@@ -52,10 +53,14 @@ def verify_otp_email(user, otp):
 
     pass
 
-def sign(key,data):
+def sign(key,sender,reciever,path):
+    size = 500 #os.path.getsize(path)
+    data = bytes(sender+reciever+str(size),'utf-8')
     digest_maker = hmac.new(key,data,hashlib.sha3_512)
     return digest_maker.hexdigest()
 
-def verify_sign(key,data,sign):
+def verify_sign(key,sender,reciever,sign,path):
+    size = 500 #os.path.getsize(path)
+    data = bytes(sender+reciever+str(size),'utf-8')
     digest_maker = hmac.new(key,data,hashlib.sha3_512)
     return sign == digest_maker.hexdigest()

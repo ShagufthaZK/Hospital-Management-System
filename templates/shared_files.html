@@ -29,7 +29,8 @@ Shared Files List
     {%for file in shared_files%}
         <tr>
             <!-- <td><a href="{{file.file.file.url}}">{{file.file.file_name}}</a></td> -->  
-            <td><a href="{%url 'insurance' file.file.user.pk %}">{{file.file.user.official_name}}</a></td>
+            <!-- <td><a href="{%url 'insurance' file.file.user.pk %}">{{file.file.user.official_name}}</a></td> -->
+            <td>{{file.file.user.official_name}}</td>
             <td>{{file.file.user.official_name}}</td>
             <td>{{file.file.user.user_type}}</td>
             <td>{{file.shared_to.official_name}}</td>

@@ -1,5 +1,6 @@
 import email
 import ast
+import os
 from itertools import product
 from multiprocessing import context
 from django.shortcuts import render, redirect
@@ -325,7 +326,7 @@ def share_file_view(request,pk):
 @login_required(login_url='/login/')
 def show_shared_files_view(request):
     context = {}
-    context['shared_files'] = SharedFiles.objects.filter(Q(shared_to=request.user)|Q(file__user=request.user)) #filter(shared_to.official_name=request.user.official_name)
+    context['shared_files'] = SharedFiles.objects.filter(Q(shared_to=request.user))#|Q(file__user=request.user)) #filter(shared_to.official_name=request.user.official_name)
     return render(request,'shared_files.html',context)
 
 def user_click(request,pk):
@@ -353,8 +354,9 @@ def user_click(request,pk):
                 key = bytes(request.user.symm_key,'utf-8')
                 #TODO: ADD FILE METADATA HERE
                 data = b""
-                #sign = hmac.new(key,bytes(data, 'utf-8'),hashlib.sha3_512)
-                shared_file = SharedFiles.objects.create(file=file,shared_to=symptom.symp.user,digital_signature=sign(key,data))
+                
+                shared_file = SharedFiles.objects.create(file=file,shared_to=symptom.symp.user)
+                shared_file.digital_signature = sign(key,request.user.username,symptom.symp.user.username,file.file.url)
                 shared_file.save()
                 symptom.prescription = shared_file
                 print(symptom.prescription.shared_to.username)
@@ -367,16 +369,17 @@ def user_click(request,pk):
                 if user.user_type=='pharmacy':
                     shared_file = SharedFiles.objects.create(file=file,shared_to=user)
                     shared_file.save()
-                    new_request = PharmacyRequest(prescription=shared_file,from_user=CustomUser.objects.get(official_name=request.POST['shared_by']))
+                    new_request = PharmacyRequest(prescription=shared_file,from_user=CustomUser.objects.get(username=request.POST['shared_by']))
                     key = bytes(new_request.from_user.symm_key,'utf-8')
-                    data = b""
+                    #size = os.path.getsize(file.url)
+                    data = b""#bytes(str(size)+new_request.from_user.username+)
                     '''
                     1. fetch all files from said reciever and sender
                     2. check if the new sign matches any of the existing ones
                     '''
                     files = SharedFiles.objects.filter(file__user=new_request.from_user,shared_to=request.user)
                     for file1 in files:
-                         if verify_sign(key,data,file1.digital_signature):
+                         if verify_sign(key,new_request.from_user.username,request.user.username,file1.digital_signature,file1.file.file.url):
                               new_request.verified = True
                               new_request.prescription = file1
                     # existing_sign = 
@@ -391,9 +394,9 @@ def user_click(request,pk):
             elif request.user.user_type=='pharmacy':
                 pharmacy_req = PharmacyRequest.objects.get(pk=pk)
                 key = bytes(request.user.symm_key,'utf-8')
-                data = b""
+                #data = b""
                 shared_file = SharedFiles.objects.create(file=file,shared_to=pharmacy_req.prescription.file.user)
-                shared_file.digital_signature = sign(key,data)
+                shared_file.digital_signature = sign(key,request.user.username,pharmacy_req.prescription.file.user.username,file.file.url)
                 shared_file.save()
                 pharmacy_req.bill = shared_file
                 pharmacy_req.save()
@@ -401,12 +404,14 @@ def user_click(request,pk):
     else:
         form = FileUploadForm(request=request)
         context['file_form'] = form
-        user = CustomUser.objects.get(pk=pk)
-        if user.user_type=='pharmacy':
+        
+        if request.user.user_type=='patient':
+             user = CustomUser.objects.get(pk=pk)
              user_form = SharedByForm()
              USER_CHOICES = CustomUser.objects.all().exclude(user_type="patient").exclude(user_type="pharmacy").exclude(user_type="insurance")
-             user_form.fields['shared_by'].choices = [(title.official_name, title.official_name) for title in USER_CHOICES]
+             user_form.fields['shared_by'].choices = [(title.username, title.username) for title in USER_CHOICES]
              context['user_form'] = user_form
+
         return render(request,"userclick.html",context)
 
       
