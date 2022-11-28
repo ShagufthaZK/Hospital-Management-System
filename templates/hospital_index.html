@@ -10,6 +10,7 @@ Welcome Hospital!
 
 <a href="{%url 'edit'%}">Edit Profile</a>
 <a href="{%url 'show_file'%}">View Files</a>
+<br><br>
 
 <style>
     table, th, td {
@@ -23,17 +24,32 @@ Welcome Hospital!
     <tr class="header">
       <th >Patient Name</th>
       <th >Symptoms</th>
-      <th >Status</th>
+      <th >Fullfilled</th>
       <th > Upload Doc</th>
+      <th > Send Prescription</th>
     </tr>
-    {%for user in sympto%}
+    {%for s in sympto%}
     <tr>
-        <td>{{user.symp.user}}</td>
-        <td>{{user.symp.symp}}</td>
-        <td>{{user.completed}}</td>
-        <td><a href="{%url 'userclick' user.symp.user.pk %}">Upload</a></td>
-        <td><a href="{%url 'symptom_valid' user.pk %}">Verification</a></td>
-        
+        <td>{{s.symp.user}}</td>
+        <td>{{s.symp.symp}}</td>
+        <td>{{s.completed}}</td>
+        {%if s.completed%}
+        <td><a href="{{s.prescription.file.file.url}}" target="_blank">Download</a></td>
+        <td>Already Shared</td>
+        {%else%}
+          {%if s.prescription is None %}
+            <td><a href="{%url 'userclick' s.pk %}">Upload</a></td>
+            <td>No prescription uploaded yet</td>
+          {%else%}
+            <td><a href="{{s.prescription.file.file.url}}" target="_blank">Download</a></td>
+            <td>
+              <form method="post" action="{%url 'symptom_valid' s.pk%}">
+                {%csrf_token%}
+                <button type="submit">Share</button>
+              </form>
+            </td>
+          {%endif%}
+        {%endif%}
       </tr>
     {%endfor%}
 </table>

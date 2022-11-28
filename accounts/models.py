@@ -187,6 +187,7 @@ class Symptoms(models.Model):
 class SymptomsShared(models.Model):
     symp=models.ForeignKey(Symptoms,on_delete=models.CASCADE)
     shared_to=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    prescription = models.ForeignKey(SharedFiles,on_delete=models.CASCADE,null=True)
     completed=models.BooleanField(default=False)
 
 class Amount(models.Model):

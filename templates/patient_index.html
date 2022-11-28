@@ -23,13 +23,13 @@ Welcome Patient
 <form method="post">
     {%csrf_token%}
     {% for field in search_form%} 
-        <p>
+        <!-- <p> -->
             {{field.label_tag}}
             {{field}}
             {%if field.help_text%}
                 <small style="color: grey;">{{field.help_text}}</small>
-            {%endif%}
-        </p>
+            {%endif%} &nbsp;&nbsp;
+        <!-- </p> -->
     
         
     {%endfor%}

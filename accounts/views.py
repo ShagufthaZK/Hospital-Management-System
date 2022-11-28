@@ -155,9 +155,9 @@ def patient_view(request):
         form = OrganizationAndHealthcareProfessionalSearchForm(request.POST)
         if form.is_valid():
             if form.cleaned_data.get('user_type') == 'all':
-                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name')).exclude(user_type="patient")
+                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name'),address__contains=form.cleaned_data.get('location')).exclude(user_type="patient")
             else:
-                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name'),user_type = form.cleaned_data.get('user_type')).exclude(user_type="patient")
+                users = CustomUser.objects.filter(official_name__contains=form.cleaned_data.get('name'),address__contains=form.cleaned_data.get('location'),user_type = form.cleaned_data.get('user_type')).exclude(user_type="patient")
     else:
         form = OrganizationAndHealthcareProfessionalSearchForm(initial={'user_type':'all'})
         users = CustomUser.objects.exclude(user_type="patient")
@@ -169,13 +169,20 @@ def patient_view(request):
 @login_required(login_url='/login/')
 def hospital_view(request):
     context={}
-    
     if request.user.user_type != 'hospital':
         return redirect('login')
-    sym=SymptomsShared.objects.exclude(completed=True)
+    sym=SymptomsShared.objects.filter(shared_to=request.user)#.exclude(completed=True)
     context['sympto']=sym
         
     return render(request, 'hospital_index.html',context) 
+
+@login_required(login_url='/login/')
+def healthcare_prof_view(request):
+    if request.user.user_type != 'professional':
+        return redirect('login')
+    sym=SymptomsShared.objects.filter(shared_to=request.user).exclude(completed=True)
+    context['sympto']=sym
+    return render(request, 'health_index.html',context)
 
 @login_required(login_url='/login/')
 def insurance_view(request):
@@ -195,11 +202,7 @@ def pharmacy_view(request):
 
 
 
-@login_required(login_url='/login/')
-def healthcare_prof_view(request):
-    if request.user.user_type != 'professional':
-        return redirect('login')
-    return render(request, 'health_index.html')
+
 
 
 
@@ -334,15 +337,22 @@ def user_click(request,pk):
             file = form.save(commit=False)
             file.user = request.user
             file.save()
-            user = CustomUser.objects.get(pk=pk)
-            shared_file = SharedFiles.objects.create(file=file,shared_to=user)
-            shared_file.save()
+            # user = CustomUser.objects.get(pk=pk)
+            # shared_file = SharedFiles.objects.create(file=file,shared_to=user)
+            # shared_file.save()
             #return redirect('show_file')
-            if request.user.user_type=='hospital': 
-            #     symp=Symptoms.objects.get(user=pk)
-            #     symptom=SymptomsShared.objects.get(symp=symp)
-            #     symptom.completed=True
-            #     symptom.save()
+            if request.user.user_type=='hospital'or request.user.user_type=='professional': 
+                # symp=Symptoms.objects.get(user=pk)
+                print(pk)
+                symptom=SymptomsShared.objects.get(pk=pk)
+                print(symptom.symp.user.username)
+                shared_file = SharedFiles.objects.create(file=file,shared_to=symptom.symp.user)
+                shared_file.save()
+                symptom.prescription = shared_file
+                print(symptom.prescription.shared_to.username)
+                print("file uploaded from"+request.user.username+" for"+symptom.symp.user.username)
+                #symptom.completed=True
+                symptom.save()
                 return render(request,"out_hosp.html")
             elif request.user.user_type=='patient':
                 return render(request,"dummy2.html")
@@ -456,13 +466,13 @@ def add_insurance(request,pk):
     
 def symptom_valid(request,pk):
     if request.method=='POST':
-            symp=Symptoms.objects.get(user=pk)
-            symptom=SymptomsShared.objects.get(symp=symp)
+            #symp=Symptoms.objects.get(user=pk)
+            symptom=SymptomsShared.objects.get(pk=pk)
             print(symptom.completed)
-            symptom.completed=1
+            symptom.completed=True
             symptom.save()
                 
-            return render(request,'hospital_index.html')
+            return redirect('hospital_index')
     else:
             # symp=Symptoms.objects.get(user=pk)
             symptom=SymptomsShared.objects.get(id=pk)

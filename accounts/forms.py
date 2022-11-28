@@ -85,6 +85,7 @@ class OTPVerificationForm(forms.ModelForm):
 
 class OrganizationAndHealthcareProfessionalSearchForm(forms.Form):
     name = forms.CharField(label="Name",max_length=50,required=False)
+    location = forms.CharField(label="Location",max_length=50,required=False)
     USER_TYPE_SEARCH = USER_TYPE.copy()
     USER_TYPE_SEARCH.append(('all','All'))
     USER_TYPE_SEARCH.remove(('patient','Patient'))
