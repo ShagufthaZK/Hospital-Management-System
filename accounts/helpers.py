@@ -2,6 +2,8 @@ from django.core.mail import send_mail
 import random
 from .models import CustomUser, OTPMobileVerification
 from django.conf import settings
+import hmac
+import hashlib
 
 def send_otp_email(user):
     '''
@@ -49,3 +51,11 @@ def verify_otp_email(user, otp):
         pass
 
     pass
+
+def sign(key,data):
+    digest_maker = hmac.new(key,data,hashlib.sha3_512)
+    return digest_maker.hexdigest()
+
+def verify_sign(key,data,sign):
+    digest_maker = hmac.new(key,data,hashlib.sha3_512)
+    return sign == digest_maker.hexdigest()

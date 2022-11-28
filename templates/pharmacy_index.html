@@ -11,8 +11,8 @@ Welcome!
 <a href="{%url 'edit'%}">Edit Profile</a>
 <a href="{%url 'show_file'%}">View Files</a>
 
-<h2>Activity pending</h2>
-{%if shared_files|length > 0%}
+<h2>Request Details</h2>
+{%if pharmacy_requests|length > 0%}
 <style>
     table, th, td {
     border: 1px solid black;
@@ -22,31 +22,47 @@ Welcome!
 </style>
     <table id="table">
         <tr class="header">
-        <th >File Name</th>
-        <th >From(Name)</th>
-        <th >From(User Type)</th>
-        <th >To(Name)</th>
-        <th >To(User Type)</th>
-        <th >File</th>
+        <th >Patient Name</th>
+        <!-- <th >From(Name)</th>
+        <th >From(User Type)</th> -->
+        
+        <th >Prescription</th>
+        <th>Valid Prescription</th>
+        <th >Prescibed by</th>
+        <th >User Type</th>
+        <th >Request Payment</th>
+        <th>Payment Status</th>
         </tr>
-    {%for file in shared_files%}
+    {%for pr in pharmacy_requests%}
         <tr>
-            <!-- <td><a href="{{file.file.file_name}}"</a></td> -->
-             <td><a href="{%url 'amount' file.file.user.pk %}">{{file.file.user.official_name}}</a></td>
-            <td>{{file.file.user.official_name}}</td>
-            <td>{{file.file.user.user_type}}</td>
-            <td>{{file.shared_to.official_name}}</td>
-            <td>{{file.shared_to.user_type}}</td>
+            <td>{{pr.prescription.file.user.official_name}}</td>
             
-            <td><a href="{{file.file.file.url}}" target="_blank">Download</a></td>
-            {#{%if request.user.user_type==hospital%}#} 
-            <td> <a href="{%url 'userclick' file.file.user.pk %}">Upload</a></td>
-            {#{%endif%}#}
+            <td><a href="{{pr.prescription.file.url}}" target="_blank">Download</a></td>
+            <td>{{pr.verified}}</td>
+            {%if pr.verified%}
+                <td>{{pr.from_user.official_name}}</td>
+                <td>{{pr.from_user.user_type}}</td>
+                {%if pr.payment_details%}
+                <td>Payment Already Requested</td>
+                {%else%}
+                <td><a href="{%url 'amount' pr.pk %}">Send Request</a></td>
+                {%endif%}
+                {%if pr.completed%}
+                <td>Completed</td>
+                {%else%}
+                <td>Pending</td>
+                {%endif%}
+            {%else%}
+            <td>NA</td>
+            <td>NA</td>
+            <td>NA</td>
+            <td>NA</td>
+            {%endif%}
         </tr>
 
     {%endfor%}
 {%else%}
-You have not shared any files
+You do not have any requests
 {%endif%}
 
 

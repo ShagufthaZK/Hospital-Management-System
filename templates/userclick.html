@@ -7,7 +7,7 @@ Patient-Interaction
 {% endblock %}
 
 {% block content %}
-    <p> {{request.user.official_name}} interacting with *****</p>
+    <!-- <p> {{request.user.official_name}} interacting with *****</p> -->
 
     <form method="post" enctype="multipart/form-data">
         {%csrf_token%}
@@ -18,10 +18,19 @@ Patient-Interaction
                 {%if field.help_text%}
                     <small style="color: grey;">{{field.help_text}}</small>
                 {%endif%}
-            </p>
-        
             
         {%endfor%}
+        {%if user_form%}
+        {%for field in user_form%}
+        
+            Shared by:
+            {{field}}
+            {%if field.help_text%}
+                <small style="color: grey;">{{field.help_text}}</small>
+            {%endif%}
+        </p>
+        {%endfor%}
+        {%endif%}
         {%for field in file_form%}
             {%for error in field.errors%}
                     <p>

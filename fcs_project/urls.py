@@ -34,7 +34,7 @@ urlpatterns = [
     path('pay/',amount_pay, name="cart_name"),
     path('ins_pending/',insurance_pay, name="ins_pay"),
 
-    path('payments/views/paymenthandler/', paymenthandler, name='paymenthandler'),
+    path('payments/views/paymenthandler/<int:pk>', paymenthandler, name='paymenthandler'),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('signup/',registration_view, name="signup"),
     path('otp_email/',otp_email_view, name="otp_email"),

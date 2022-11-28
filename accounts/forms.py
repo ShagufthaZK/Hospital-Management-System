@@ -127,7 +127,9 @@ class InsuranceForm(forms.ModelForm):
         fields = ('ins_amount',)
     def __init__(self, *args, **kwargs):
         super(InsuranceForm, self).__init__(*args, **kwargs)
-        
+
+class SharedByForm(forms.Form):
+    shared_by = forms.ChoiceField(required=True)     
 
 # class ShareFileForm(forms.Form):
 #     select_user = forms.ChoiceField(label="Share with",choices = CustomUser.objects.all())

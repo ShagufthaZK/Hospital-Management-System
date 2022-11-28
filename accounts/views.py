@@ -20,7 +20,7 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 
 from accounts.models import CustomUser, UserFiles
-from .helpers import send_otp_email
+from .helpers import *
 from accounts.forms import *#RegistrationForm, UserAuthenticationForm, ProfileEdit, OTPVerificationForm, OrganizationAndHealthcareProfessionalSearchForm, FileUploadForm
 
 def registration_view(request):
@@ -197,7 +197,9 @@ def pharmacy_view(request):
     if request.user.user_type != 'pharmacy':
         return redirect('login')
     context = {}
-    context['shared_files'] = SharedFiles.objects.filter(Q(shared_to=request.user)|Q(file__user=request.user))
+    
+    context['pharmacy_requests'] = PharmacyRequest.objects.filter(prescription__shared_to=request.user)#Q(shared_to=request.user)|Q(file__user=request.user))
+    print(context)
     return render(request, 'pharmacy_index.html',context)
 
 
@@ -220,6 +222,7 @@ def otp_email_view(request):
         form = OTPVerificationForm(request.POST, request=request)
         if form.is_valid():
             #form.save()
+            #correct = verify_otp_email(user,)
             user.is_email_verified = True
             user.save()
             return redirect('login')
@@ -330,6 +333,7 @@ def user_click(request,pk):
     user = request.user
     if not user.is_authenticated: 
          return redirect('login')
+    
     if request.POST:
         form = FileUploadForm(request.POST,request.FILES,request=request)#, instance=request.user,request=request)
         if form.is_valid():
@@ -346,7 +350,11 @@ def user_click(request,pk):
                 print(pk)
                 symptom=SymptomsShared.objects.get(pk=pk)
                 print(symptom.symp.user.username)
-                shared_file = SharedFiles.objects.create(file=file,shared_to=symptom.symp.user)
+                key = bytes(request.user.symm_key,'utf-8')
+                #TODO: ADD FILE METADATA HERE
+                data = b""
+                #sign = hmac.new(key,bytes(data, 'utf-8'),hashlib.sha3_512)
+                shared_file = SharedFiles.objects.create(file=file,shared_to=symptom.symp.user,digital_signature=sign(key,data))
                 shared_file.save()
                 symptom.prescription = shared_file
                 print(symptom.prescription.shared_to.username)
@@ -355,15 +363,43 @@ def user_click(request,pk):
                 symptom.save()
                 return render(request,"out_hosp.html")
             elif request.user.user_type=='patient':
+                user = CustomUser.objects.get(pk=pk)
+                if user.user_type=='pharmacy':
+                    shared_file = SharedFiles.objects.create(file=file,shared_to=user)
+                    shared_file.save()
+                    new_request = PharmacyRequest(prescription=shared_file,from_user=CustomUser.objects.get(official_name=request.POST['shared_by']))
+                    key = bytes(new_request.from_user.symm_key,'utf-8')
+                    data = b""
+                    '''
+                    1. fetch all files from said reciever and sender
+                    2. check if the new sign matches any of the existing ones
+                    '''
+                    files = SharedFiles.objects.filter(file__user=new_request.from_user,shared_to=request.user)
+                    for file in files:
+                         if verify_sign(key,data,file.digital_signature):
+                              new_request.verified = True
+                    # existing_sign = 
+                    # new_request.verified = verify_sign()
+                    new_request.save()
+                    print("from2 saved")
+                elif user.user_type=='insurance':
+                     pass
                 return render(request,"dummy2.html")
                             
             elif request.user.user_type=='patient':
                 return render(request,"dummy2.html")
     else:
-        form = FileUploadForm(request=request)#instance=request.user,request=request)
+        form = FileUploadForm(request=request)
         context['file_form'] = form
+        user = CustomUser.objects.get(pk=pk)
+        if user.user_type=='pharmacy':
+             user_form = SharedByForm()
+             USER_CHOICES = CustomUser.objects.all().exclude(user_type="patient").exclude(user_type="pharmacy").exclude(user_type="insurance")
+             user_form.fields['shared_by'].choices = [(title.official_name, title.official_name) for title in USER_CHOICES]
+             context['user_form'] = user_form
         return render(request,"userclick.html",context)
-    
+
+      
 def add_symptoms(request,pk):
     context={}
     user = request.user
@@ -406,12 +442,15 @@ def add_amount(request,pk):
             file = form.save(commit=False)
             file.user = request.user
             file.save()  
-            print("form saved")   
-            user = CustomUser.objects.get(pk=pk)
+            print("form saved") 
+            pharmacy_req = PharmacyRequest.objects.get(pk=pk)  
+            user = CustomUser.objects.get(pk=pharmacy_req.prescription.file.user.pk)
             # symp = request.POST['sympto']
             #now you can save them into related model
             temp=AmountShared.objects.create(amount=file,shared_to=user) 
             temp.save()
+            pharmacy_req.payment_details = temp
+            pharmacy_req.save()
             print('file is',file)
             print('user is',user)
 
@@ -502,7 +541,8 @@ def amount_valid(request,pk):
 
 def amount_pay(request):
     
-    amountshared=AmountShared.objects.get(shared_to=request.user)
+    amountshared=PharmacyRequest.objects.filter(payment_details__shared_to=request.user).exclude(completed=True)
+    print(amountshared)
     context={}
     
     context['amountshared']=amountshared

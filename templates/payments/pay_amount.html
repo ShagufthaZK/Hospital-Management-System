@@ -1,30 +1,44 @@
-
+{% extends 'base.html' %}
 
 {% block content %}
 
 <h1>Pending Payments- </h1>
 <br>
 </br>
-
+<style>
+  table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 8px;
+}
+</style>
+{%if amountshared|length > 0%}
 <table>
   <th >Organization  </th>
   <th >Amount</th>
+  <th >Pay</th>
 <tr>
-  {% for send, user in details %}
-<form method="post" action="/payments/views/homepage"> 
-  {%csrf_token%}
- <input type="hidden" name="amount" value={{send}} />
- 
- <td><label for="user">{{user}}</label> </td>
- <td> <label for="amount"> {{  send   }}   </label>  </td>
+  
+  {% for details in amountshared %}
+    <form method="post" action="/payments/views/homepage"> 
+      {%csrf_token%}
+      <input type="hidden" name="amount" value={{details.payment_details.amount.amount}} />
+      <input type="hidden" name="transaction_pk" value={{details.pk}} />
 
-  <td><input type="submit" value="Pay Bill"></td>
+      <td><label for="user">{{user}}</label> </td>
+      <td> <label for="amount"> {{  details.payment_details.amount.amount}}   </label>  </td>
 
-</form>
+        <td><input type="submit" value="Pay"></td>
+
+    </form>
+  {%endfor%}
+  
 </tr>
 
-{%endfor%}
 </table>
+{%else%}
+  No pending payments
+  {%endif%}
 {%endblock%}
 
 

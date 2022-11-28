@@ -24,6 +24,7 @@ Shared Files List
         <th >To(Name)</th>
         <th >To(User Type)</th>
         <th >File</th>
+        <th >File Type</th>
         </tr>
     {%for file in shared_files%}
         <tr>
@@ -35,9 +36,15 @@ Shared Files List
             <td>{{file.shared_to.user_type}}</td>
             
             <td><a href="{{file.file.file.url}}" target="_blank">Download</a></td>
-            {#{%if request.user.user_type==hospital%}#} 
+            <!-- {#{%if request.user.user_type==hospital%}#} 
             <td><a href="{%url 'userclick' file.file.user.pk %}">Upload</a></td>
-            {#{%endif%}#}
+            {#{%endif%}#} -->
+            {%ifequal file.file.user.user_type 'hospital'%}
+                <td>Prescription</td>
+            {%endifequal%}
+            {%ifequal file.file.user.user_type 'pharmacy'%}
+                <td>Medical Bill</td>
+            {%endifequal%}
         </tr>
 
     {%endfor%}

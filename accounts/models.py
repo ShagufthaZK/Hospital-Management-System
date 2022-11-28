@@ -176,7 +176,7 @@ class UserFiles(models.Model):
 class SharedFiles(models.Model):
     file = models.ForeignKey(UserFiles,on_delete=models.CASCADE)
     shared_to = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
-    
+    digital_signature = models.CharField(max_length=512)
     
 class Symptoms(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
@@ -190,6 +190,7 @@ class SymptomsShared(models.Model):
     prescription = models.ForeignKey(SharedFiles,on_delete=models.CASCADE,null=True)
     completed=models.BooleanField(default=False)
 
+
 class Amount(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     amount = models.CharField(max_length=100,default='')
@@ -200,14 +201,20 @@ class Amount(models.Model):
 class AmountShared(models.Model):
     amount=models.ForeignKey(Amount,on_delete=models.CASCADE)
     shared_to=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
-    completed=models.BooleanField(default=False)
+    #completed=models.BooleanField(default=False)
+
+class PharmacyRequest(models.Model):
+    prescription = models.ForeignKey(SharedFiles,on_delete=models.CASCADE,null=True)
+    from_user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+    payment_details = models.ForeignKey(AmountShared,null=True,on_delete=models.SET_NULL)
+    verified = models.BooleanField(default=True)
 
 class Insurance(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     ins_amount = models.CharField(max_length=100,default='')
     def __str__(self):
         return self.ins_amount
-        #  +' | ' +  str(self.completed)
     
 class InsuranceShared(models.Model):
     ins_amount=models.ForeignKey(Insurance,on_delete=models.CASCADE)

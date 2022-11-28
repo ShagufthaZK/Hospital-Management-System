@@ -4,7 +4,7 @@ import razorpay
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseBadRequest
 
-from accounts.models import InsuranceClaim
+from accounts.models import *
 
 RAZOR_KEY_ID = "rzp_test_ndVWQPFQ1d2N1H"
 RAZOR_KEY_SECRET = "XkhQdi3x6IeOuitCK3oZViGh"
@@ -24,7 +24,7 @@ def homepage(request):
 
 	# order id of newly created order.
 	razorpay_order_id = razorpay_order['id']
-	callback_url = 'paymenthandler/'
+	callback_url = 'paymenthandler/'+request.POST['transaction_pk']
 
 	# we need to pass these details to frontend.
 	context = {}
@@ -33,7 +33,7 @@ def homepage(request):
 	context['razorpay_amount'] = float(request.POST['amount'])
 	context['currency'] = currency
 	context['callback_url'] = callback_url
-
+	context['transaction_pk'] = request.POST['transaction_pk']
 	return render(request, 'payments/payment.html', context=context)
 
 def claim(request):
@@ -48,14 +48,17 @@ def claim(request):
 
 
 @csrf_exempt
-def paymenthandler(request):
+def paymenthandler(request,pk):
     # amount = float(request.GET['amount'])*100 # Rs. 200
-    print(request.POST.get('razorpay_payment_id', ''))
-    print(request.POST.get('razorpay_payment_id'))
+    #print(request.POST.get('razorpay_payment_id', ''))
+    print(request)
     print(request.POST.get('razorpay_signature'))
     payment_id=request.POST.get('razorpay_payment_id', '')
-    # amount=amount
-    # razorpay_client.payment.capture(payment_id, amount)
+    if request.user.user_type=='patient':
+        pharmacy_request = PharmacyRequest.objects.get(pk=pk)
+        pharmacy_request.completed = True
+        pharmacy_request.save()
+        
     return render(request, 'payments/payment_success.html')
 
 
