@@ -10,9 +10,10 @@
   <th >Amount</th>
 <tr>
   {% for send, user in details %}
-<form method="post" action="/payments/views/homepage?amount={{send}}"> 
+<form method="post" action="/payments/views/homepage"> 
   {%csrf_token%}
-  
+  <input type="hidden" name="amount" value={{send}} />
+  <input type="hidden" name="transaction_pk" value={{user.pk}} />
  <td><label for="user">{{user}}</label> </td>
  <td> <label for="amount"> {{  send   }}   </label>  </td>
 

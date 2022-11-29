@@ -622,12 +622,13 @@ def insurance_pay(request):
         else:
             sends.append(100)
 
-   
+    print(sends)
+    print(try_users)
     details = zip(sends, try_users)
     ins_context = {
             'details': details,
         }
-   
+    
     return render(request,'payments/pay_insurance.html',ins_context)
 
 
