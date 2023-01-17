@@ -1,4 +1,4 @@
-# FCS_Project
+# Hospital Management System
 
 ## Setup
 
